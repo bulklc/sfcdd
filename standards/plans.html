@@ -49,10 +49,22 @@
         right: 0;
         bottom: 0;
         height: calc(100vh - var(--navbar-height));
-        overflow-y: hidden; /* Changed from scroll to hidden */
+        overflow-y: hidden;
         padding: 2rem 2rem 2rem 2rem;
         max-width: 100%;
         box-sizing: border-box;
+      }
+
+      /* Mobile-specific compact padding */
+      @media (max-width: 575px) {
+        main.container {
+          padding: 0.5rem;
+        }
+
+        h1 {
+          font-size: 1.25rem;
+          margin-bottom: 0.5rem !important;
+        }
       }
 
       /* Add padding for container content */
@@ -98,6 +110,15 @@
         font-weight: 600;
         font-size: 1.1rem;
       }
+
+      /* Mobile-specific compact accordion buttons */
+      @media (max-width: 575px) {
+        .accordion-button.category-level {
+          font-size: 0.9rem;
+          padding: 0.5rem 0.75rem;
+        }
+      }
+
       .accordion-button.category-level:not(.collapsed) {
         background-color: var(--primary-blue);
         color: white;
@@ -118,6 +139,15 @@
         font-size: 1rem;
         padding-left: 2rem;
       }
+
+      /* Mobile-specific compact section buttons */
+      @media (max-width: 575px) {
+        .accordion-button.section-level {
+          font-size: 0.85rem;
+          padding: 0.5rem 0.75rem 0.5rem 1.5rem;
+        }
+      }
+
       .accordion-button.section-level:not(.collapsed) {
         background-color: var(--faded-blue);
         color: white;
@@ -146,10 +176,15 @@
 
       /* Add max-height and scroll to section accordion body */
       .accordion-nested .accordion-body {
-        max-height: calc(
-          60vh - var(--navbar-height) - 8rem
-        ); /* 60% of viewport minus navbar and padding */
+        max-height: calc(60vh - var(--navbar-height) - 8rem);
         overflow-y: auto;
+      }
+
+      /* Mobile-specific compact accordion body */
+      @media (max-width: 575px) {
+        .accordion-nested .accordion-body {
+          max-height: calc(70vh - var(--navbar-height) - 2rem);
+        }
       }
 
       /* Drawing items */
@@ -162,6 +197,32 @@
         color: inherit;
         cursor: pointer;
       }
+
+      /* Mobile-specific compact drawing items */
+      @media (max-width: 575px) {
+        .drawing-item {
+          padding: 0.5rem 0.5rem 0.5rem 1rem;
+          flex-direction: column;
+          align-items: flex-start !important;
+        }
+
+        .drawing-no {
+          font-size: 0.85rem;
+        }
+
+        .drawing-title {
+          font-size: 0.8rem;
+          margin-left: 0 !important;
+          margin-top: 0.25rem;
+        }
+
+        .sheet-number {
+          font-size: 0.75rem;
+          margin-left: 0 !important;
+          margin-top: 0.25rem;
+        }
+      }
+
       .drawing-item:hover {
         background-color: var(--faded-yellow);
         text-decoration: none;
