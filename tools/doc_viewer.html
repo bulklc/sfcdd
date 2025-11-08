@@ -57,6 +57,13 @@
     </div>
 
     <script>
+      // Detect if mobile device
+      function isMobileDevice() {
+        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+          navigator.userAgent
+        );
+      }
+
       // Parse URL parameters
       const urlParams = new URLSearchParams(window.location.search);
       const pdfParam = urlParams.get("pdf");
@@ -72,6 +79,14 @@
 
         if (!dataSource) {
           showError("No data source specified");
+          return;
+        }
+
+        const pdfPath = `../standards/${dataSource}/${pdfParam}.pdf`;
+
+        // If mobile device, redirect directly to PDF
+        if (isMobileDevice()) {
+          window.location.href = pdfPath;
           return;
         }
 
@@ -105,7 +120,6 @@
             } - SFCDD`;
 
             // Set up PDF link
-            const pdfPath = `../standards/${dataSource}/${pdfParam}.pdf`;
             document.getElementById("pdf-frame").src = pdfPath;
           } else {
             showError(
@@ -115,7 +129,6 @@
         } catch (error) {
           console.error("Error loading drawing info:", error);
           // Still show the PDF even if we can't load the metadata
-          const pdfPath = `../standards/${dataSource}/${pdfParam}.pdf`;
           document.getElementById(
             "page-title"
           ).textContent = `${pdfParam} - SFCDD`;
