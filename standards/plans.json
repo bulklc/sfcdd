@@ -1,0 +1,598 @@
+{
+  "document": "City Distribution Division Standard Plans",
+  "sections": [
+    {
+      "section": "STANDARD PLAN FOR DUCTILE IRON PIPE MAIN INSTALLATION",
+      "sheet_start": 1,
+      "drawings": [
+        {
+          "drawing_no": "CDD-LP-001A",
+          "title": "POTABLE/RECYCLED WATER NEW MAIN INSTALLATION STANDARD CONFIGURATION (1/2)",
+          "sheet": 1
+        },
+        {
+          "drawing_no": "CDD-LP-001B",
+          "title": "POTABLE/RECYCLED WATER NEW MAIN INSTALLATION STANDARD CONFIGURATION (2/2)",
+          "sheet": 2
+        },
+        {
+          "drawing_no": "CDD-LP-002",
+          "title": "POTABLE & RECYCLED WATER PIPE TRENCH",
+          "sheet": 3
+        },
+        {
+          "drawing_no": "CDD-LP-003",
+          "title": "AIR VALVES & BLOW OFFS",
+          "sheet": 4
+        },
+        {
+          "drawing_no": "CDD-LP-004A",
+          "title": "FIRE HYDRANT",
+          "sheet": 5
+        },
+        {
+          "drawing_no": "CDD-LP-004B",
+          "title": "SFFD DOME FOR LOW PRESSURE FIRE HYDRANT",
+          "sheet": 6
+        },
+        {
+          "drawing_no": "CDD-LP-005",
+          "title": "4\" & 6\" FLUSHING ASSEMBLY",
+          "sheet": 7
+        },
+        {
+          "drawing_no": "CDD-LP-006",
+          "title": "POSITIVE PIPE RESTRAINT IN ADDITION TO RESTRAINT GASKETS",
+          "sheet": 8
+        },
+        {
+          "drawing_no": "CDD-LP-008",
+          "title": "INSTALLATION OF PIPE END FOR SFWD CONNECTION",
+          "sheet": 9
+        }
+      ]
+    },
+    {
+      "section": "NEW BYPASS TO EXISTING PIPE CONNECTION",
+      "sheet_start": 10,
+      "drawings": [
+        {
+          "drawing_no": "CDD-LP-101",
+          "title": "FOR NEW 8\" PIPE TO EXISTING 6\" OR 8\" PIPE",
+          "sheet": 10
+        },
+        {
+          "drawing_no": "CDD-LP-102",
+          "title": "FOR NEW 12\" OR 16\" PIPE TO EXISTING 6\" OR 8\" PIPE",
+          "sheet": 11
+        },
+        {
+          "drawing_no": "CDD-LP-103",
+          "title": "FOR NEW 6\" OR 8\" PIPE TO EXISTING 12\" OR 6\" PIPE",
+          "sheet": 12
+        },
+        {
+          "drawing_no": "CDD-LP-104",
+          "title": "FOR NEW 12\" OR 16\" PIPE TO EXISTING 12\" PIPE",
+          "sheet": 13
+        },
+        {
+          "drawing_no": "CDD-LP-105",
+          "title": "FOR NEW 12\" PIPE TO EXISTING 16\" PIPE",
+          "sheet": 14
+        },
+        {
+          "drawing_no": "CDD-LP-106",
+          "title": "FOR NEW 16\" PIPE TO EXISTING 16\" PIPE",
+          "sheet": 15
+        }
+      ]
+    },
+    {
+      "section": "NEW BYPASS TAP TO EXISTING PIPE",
+      "sheet_start": 16,
+      "drawings": [
+        {
+          "drawing_no": "CDD-LP-107",
+          "title": "FOR NEW 8\" PIPE TO EXISTING 12\" OR 16\" PIPE",
+          "sheet": 16
+        },
+        {
+          "drawing_no": "CDD-LP-108",
+          "title": "FOR NEW 12\" PIPE TO EXISTING 16\" PIPE",
+          "sheet": 17
+        }
+      ]
+    },
+    {
+      "section": "NEW BYPASS TO NEW PIPE CONNECTION",
+      "sheet_start": 18,
+      "drawings": [
+        {
+          "drawing_no": "CDD-LP-109",
+          "title": "FOR NEW 8\" PIPE TO NEW 8\" PIPE",
+          "sheet": 18
+        },
+        {
+          "drawing_no": "CDD-LP-110",
+          "title": "FOR NEW 12\" OR 16\" PIPE TO NEW 8\" PIPE",
+          "sheet": 19
+        },
+        {
+          "drawing_no": "CDD-LP-111",
+          "title": "FOR NEW 12\" OR 16\" PIPE TO NEW 12\" PIPE",
+          "sheet": 20
+        },
+        {
+          "drawing_no": "CDD-LP-112",
+          "title": "FOR NEW 16\" PIPE TO NEW 16\" PIPE",
+          "sheet": 21
+        }
+      ]
+    },
+    {
+      "section": "NEW PARALLEL MAIN CONNECTION",
+      "sheet_start": 22,
+      "drawings": [
+        {
+          "drawing_no": "CDD-LP-113",
+          "title": "FOR NEW 4\", 6\" OR 8\" PIPE TO EXISTING 4\", 6\" OR 8\" PIPE",
+          "sheet": 22
+        },
+        {
+          "drawing_no": "CDD-LP-114",
+          "title": "FOR NEW 6\" OR 8\" PIPE REDUCING TO EXISTING 4\" OR 6\" PIPE",
+          "sheet": 23
+        },
+        {
+          "drawing_no": "CDD-LP-115",
+          "title": "FOR NEW 12\" OR 16\" PIPE REDUCING TO EXISTING 4\", 6\", 8\" OR 12\" PIPE",
+          "sheet": 24
+        },
+        {
+          "drawing_no": "CDD-LP-116",
+          "title": "FOR NEW 12\" OR 16\" PIPE TO EXISTING 12\" OR 16\" PIPE",
+          "sheet": 25
+        }
+      ]
+    },
+    {
+      "section": "NEW LATERAL MAIN CONNECTION",
+      "sheet_start": 26,
+      "drawings": [
+        {
+          "drawing_no": "CDD-LP-117",
+          "title": "FOR NEW 4\", 6\" OR 8\" BRANCH TO NEW 4\", 6\" OR 8\" MAIN",
+          "sheet": 26
+        },
+        {
+          "drawing_no": "CDD-LP-118",
+          "title": "FOR NEW 4\", 6\", 8\" OR 12\" BRANCH TO NEW 12\" MAIN",
+          "sheet": 27
+        },
+        {
+          "drawing_no": "CDD-LP-119",
+          "title": "FOR NEW 6\", 8\" 12\" OR 16\" BRANCH TO NEW 16\" MAIN",
+          "sheet": 28
+        }
+      ]
+    },
+    {
+      "section": "NEW LATERAL BRANCH TO EXISTING MAIN CONNECTION",
+      "sheet_start": 29,
+      "drawings": [
+        {
+          "drawing_no": "CDD-LP-120",
+          "title": "FOR NEW 4\", 6\" OR 8\" BRANCH TO EXISTING 4\", 6\" OR 8\" MAIN",
+          "sheet": 29
+        },
+        {
+          "drawing_no": "CDD-LP-121",
+          "title": "FOR NEW 4\", 6\", 8\" OR 12\" BRANCH TO NEW 12\" MAIN",
+          "sheet": 30
+        },
+        {
+          "drawing_no": "CDD-LP-122",
+          "title": "FOR NEW 6\", 8\", 12\" OR 16\" BRANCH TO EXISTING 16\" MAIN",
+          "sheet": 31
+        }
+      ]
+    },
+    {
+      "section": "NEW LATERAL BRANCH TAP TO EXISTING MAIN CONNECTION",
+      "sheet_start": 32,
+      "drawings": [
+        {
+          "drawing_no": "CDD-LP-123",
+          "title": "FOR NEW 4\", 6\" OR 8\" TAP TO EXISTING 6\", 8\" OR 12\" MAIN",
+          "sheet": 32
+        },
+        {
+          "drawing_no": "CDD-LP-124",
+          "title": "FOR NEW 6\", 8\" OR 12\" TAP TO EXISTING MAIN",
+          "sheet": 33
+        }
+      ]
+    },
+    {
+      "section": "NEW LATERAL MAIN CONNECTION TO EXISTING BRANCH",
+      "sheet_start": 34,
+      "drawings": [
+        {
+          "drawing_no": "CDD-LP-125",
+          "title": "FOR NEW 4\", 6\" OR 8\" MAIN TO 4\", 6\" OR 8\" EXISTING BRANCH",
+          "sheet": 34
+        },
+        {
+          "drawing_no": "CDD-LP-126",
+          "title": "FOR NEW 12\" MAIN TO EXISTING 4\", 6\" OR 8\" BRANCH",
+          "sheet": 35
+        },
+        {
+          "drawing_no": "CDD-LP-127",
+          "title": "FOR NEW 16\" MAIN TO EXISTING 6\" OR 8\" BRANCH",
+          "sheet": 36
+        },
+        {
+          "drawing_no": "CDD-LP-128",
+          "title": "FOR NEW 12\" OR 16\" MAIN TO EXISTING 12\" BRANCH",
+          "sheet": 37
+        },
+        {
+          "drawing_no": "CDD-LP-129",
+          "title": "FOR NEW 16\" MAIN TO EXISTING 16\" BRANCH",
+          "sheet": 38
+        }
+      ]
+    },
+    {
+      "section": "NEW HYDRANT CONNECTION",
+      "sheet_start": 39,
+      "drawings": [
+        {
+          "drawing_no": "CDD-LP-130",
+          "title": "FOR 6\" OR 8\" PIPE",
+          "sheet": 39
+        },
+        {
+          "drawing_no": "CDD-LP-131",
+          "title": "FOR 12\" OR 16\" PIPE",
+          "sheet": 40
+        }
+      ]
+    },
+    {
+      "section": "WATER SERVICES",
+      "sheet_start": 41,
+      "drawings": [
+        {
+          "drawing_no": "CDD-LP-200A",
+          "title": "NEW WATER SERVICE DRAWING DIRECTORY",
+          "sheet": 41
+        },
+        {
+          "drawing_no": "CDD-LP-200B",
+          "title": "EXCAVATION, PERMITING AND INSTALLATION RESPONSIBILITIES FOR 5/8- THRU 2- INCH WATER SERVICES",
+          "sheet": 42
+        },
+        {
+          "drawing_no": "CDD-LP-200C",
+          "title": "EXCAVATION, PERMITING AND INSTALLATION RESPONSIBILITIES FOR 3- THRU 8- INCH WATER SERVICES",
+          "sheet": 43
+        },
+        {
+          "drawing_no": "CDD-LP-201A",
+          "title": "MATERIALS FOR 1\" SERVICE CONNECTIONS",
+          "sheet": 44
+        },
+        {
+          "drawing_no": "CDD-LP-201B",
+          "title": "1-INCH SERVICE LATERAL CONNECTION AT MAIN",
+          "sheet": 45
+        },
+        {
+          "drawing_no": "CDD-LP-201C",
+          "title": "1-INCH SERVICE LATERAL CONNECTION AT METER",
+          "sheet": 46
+        },
+        {
+          "drawing_no": "CDD-LP-201D",
+          "title": "MATERIALS FOR 1-INCH PEXA SERVICE CONNECTIONS",
+          "sheet": 47
+        },
+        {
+          "drawing_no": "CDD-LP-201E",
+          "title": "1-INCH PEXA SERVICE LATERAL CONNECTION AT MAIN",
+          "sheet": 48
+        },
+        {
+          "drawing_no": "CDD-LP-201F",
+          "title": "1-INCH PEXA SERVICE LATERAL CONNECTION AT METER",
+          "sheet": 49
+        },
+        {
+          "drawing_no": "CDD-LP-202A",
+          "title": "MATERIALS FOR 2\" SERVICE CONNECTIONS",
+          "sheet": 50
+        },
+        {
+          "drawing_no": "CDD-LP-202B",
+          "title": "2-INCH SERVICE LATERAL CONNECTION AT MAIN",
+          "sheet": 51
+        },
+        {
+          "drawing_no": "CDD-LP-202C",
+          "title": "2-INCH SERVICE LATERAL CONNECTION AT METER (DOMESTIC AND COMBINATION SERVICE)",
+          "sheet": 52
+        },
+        {
+          "drawing_no": "CDD-LP-202D",
+          "title": "2-INCH SERVICE LATERAL CONNECTION AT CURB (DEDICATED FIRE SERVICE)",
+          "sheet": 53
+        },
+        {
+          "drawing_no": "CDD-LP-202E",
+          "title": "MATERIALS FOR 2-INCH PEXA SERVICE CONNECTIONS",
+          "sheet": 54
+        },
+        {
+          "drawing_no": "CDD-LP-202F",
+          "title": "2-INCH PEXA SERVICE LATERAL CONNECTION AT MAIN",
+          "sheet": 55
+        },
+        {
+          "drawing_no": "CDD-LP-202G",
+          "title": "2-INCH PEXA SERVICE LATERAL CONNECTION AT METER (DOMESTIC AND COMBINATIONSERVICE)",
+          "sheet": 56
+        },
+        {
+          "drawing_no": "CDD-LP-203A",
+          "title": "HOT TAP FOR SERVICE (≥ 4\" DIA.) CONNECTION AT MAIN",
+          "sheet": 57
+        },
+        {
+          "drawing_no": "CDD-LP-203B",
+          "title": "DROP IN TEE FOR SERVICE (≥ 4\" DIA.) CONNECTION AT MAIN",
+          "sheet": 58
+        },
+        {
+          "drawing_no": "CDD-LP-203C",
+          "title": "REDUNDANT ISOLATED FIRE SERVICE (≥ 6\" DIA.) CONNECTION AT MAIN",
+          "sheet": 59
+        },
+        {
+          "drawing_no": "CDD-LP-203D",
+          "title": "3-INCH COMPOUND METER ASSEMBLY (STANDARD INSTALLATION)",
+          "sheet": 60
+        },
+        {
+          "drawing_no": "CDD-LP-203D-SP",
+          "title": "3-INCH COMPOUND SPOOL PIECE ASSEMBLY",
+          "sheet": 61
+        },
+        {
+          "drawing_no": "CDD-LP-203E",
+          "title": "4-INCH COMPOUND METER ASSEMBLY (STANDARD INSTALLATION)",
+          "sheet": 62
+        },
+        {
+          "drawing_no": "CDD-LP-203E-SP",
+          "title": "4-INCH COMPOUND SPOOL PIECE ASSEMBLY",
+          "sheet": 63
+        },
+        {
+          "drawing_no": "CDD-LP-203F",
+          "title": "6-INCH COMPOUND METER ASSEMBLY (STANDARD INSTALLATION)",
+          "sheet": 64
+        },
+        {
+          "drawing_no": "CDD-LP-203F-SP",
+          "title": "6-INCH COMPOUND SPOOL PIECE ASSEMBLY",
+          "sheet": 65
+        },
+        {
+          "drawing_no": "CDD-LP-203G",
+          "title": "CUSTOMER POINT OF CONNECTION FOR FIRE SERVICE (≥ 4\" DIA.)",
+          "sheet": 66
+        },
+        {
+          "drawing_no": "CDD-LP-220A",
+          "title": "SFPUC NEW METER INSTALLATIONS ON PRIVATE PROPERTY - NOTES",
+          "sheet": 67
+        },
+        {
+          "drawing_no": "CDD-LP-220B",
+          "title": "SFPUC NEW METER INSTALLATIONS ON PRIVATE PROPERTY - DWG",
+          "sheet": 68
+        },
+        {
+          "drawing_no": "CDD-LP-221-CA",
+          "title": "TYPICAL METER MANIFOLD REPLACEMENT IN SUB-SIDEWALK BASEMENT FOR CAPITAL WATER MAIN REPLACMENT PROJECT",
+          "sheet": 69
+        },
+        {
+          "drawing_no": "CDD-LP-204",
+          "title": "10\"X18\" RPM OVAL METER BOX COVER",
+          "sheet": 70
+        },
+        {
+          "drawing_no": "CDD-LP-205",
+          "title": "10\"X16\" POLYMER CONCRETE OVAL METER BOX COVER",
+          "sheet": 71
+        },
+        {
+          "drawing_no": "CDD-LP-206",
+          "title": "7\"X13\" POLYMER CONCRETE METER BOX READ LID",
+          "sheet": 72
+        },
+        {
+          "drawing_no": "CDD-LP-207",
+          "title": "9\"X14\" POLYMER CONCRETE METER BOX READ LID",
+          "sheet": 73
+        },
+        {
+          "drawing_no": "CDD-LP-208",
+          "title": "10\"X15\" POLYMER CONCRETE METER BOX COVER",
+          "sheet": 74
+        },
+        {
+          "drawing_no": "CDD-LP-209",
+          "title": "10\"X15\" POLYMER CONCRETE METER BOX COVER 9X",
+          "sheet": 75
+        },
+        {
+          "drawing_no": "CDD-LP-210",
+          "title": "17\"X30\" POLYMER CONCRETE METER BOX COVER WITH 7\"X13\" READ LID OPENING",
+          "sheet": 76
+        },
+        {
+          "drawing_no": "CDD-LP-211",
+          "title": "13\"X24\" POLYMER CONCRETE METER BOX COVER WITH 7\"X13\" READ LID OPENING",
+          "sheet": 77
+        },
+        {
+          "drawing_no": "CDD-LP-212",
+          "title": "17\"X30\"X12\" METER BOX",
+          "sheet": 78
+        },
+        {
+          "drawing_no": "CDD-LP-213",
+          "title": "10\"X15\"X12\" METER BOX",
+          "sheet": 79
+        },
+        {
+          "drawing_no": "CDD-LP-214",
+          "title": "36\"X60\"X30\" METER VAULT W/TORSION ASSISTED COVER",
+          "sheet": 80
+        },
+        {
+          "drawing_no": "CDD-LP-215",
+          "title": "48\"X72\"X30\" VAULT W/TORSION ASSISTED COVER",
+          "sheet": 81
+        },
+        {
+          "drawing_no": "CDD-LP-216",
+          "title": "48\"X96\"X30\" VAULT W/TORSION ASSISTED COVER",
+          "sheet": 82
+        },
+        {
+          "drawing_no": "CDD-LP-217",
+          "title": "30\"X48\"X24\" TORSION ASSIST VAULT",
+          "sheet": 83
+        }
+      ]
+    },
+    {
+      "section": "VALVE BOXES AND COVERS",
+      "sheet_start": 84,
+      "drawings": [
+        {
+          "drawing_no": "CDD-LP-250",
+          "title": "STANDARD POTABLE WATER VALVE BOX INSTALLATION",
+          "sheet": 84
+        },
+        {
+          "drawing_no": "CDD-LP-251",
+          "title": "STANDARD SFWD POTABLE WATER GATE COVER",
+          "sheet": 85
+        },
+        {
+          "drawing_no": "CDD-LP-252",
+          "title": "STANDARD SFWD RECYCLED WATER GATE COVER",
+          "sheet": 86
+        },
+        {
+          "drawing_no": "CDD-LP-253A",
+          "title": "ADJUSTMENT OF STANDARD POTABLE GATE COVER TO NEW PAVEMENT GRADE (≤4\")",
+          "sheet": 87
+        },
+        {
+          "drawing_no": "CDD-LP-253B",
+          "title": "ADJUSTMENT OF STANDARD POTABLE GATE COVER TO NEW PAVEMENT GRADE (> 4\")",
+          "sheet": 88
+        },
+        {
+          "drawing_no": "CDD-LP-254",
+          "title": "ADJUSTMENT OF POTABLE VALVE BOXES AND COVERS ON WATER LATERALS TO SIDEWALK GRADE",
+          "sheet": 89
+        },
+        {
+          "drawing_no": "CDD-LP-255",
+          "title": "STANDARD 4-INCH AIR VALVE ENCLOSURE",
+          "sheet": 90
+        },
+        {
+          "drawing_no": "CDD-LP-256",
+          "title": "STANDARD 8-INCH AIR VALVE ENCLOSURE",
+          "sheet": 91
+        },
+        {
+          "drawing_no": "CDD-LP-257",
+          "title": "ADJUSTMENT OF METER BOXES TO NEW SIDEWALK GRADE AT CURB RAMPS",
+          "sheet": 92
+        }
+      ]
+    },
+    {
+      "section": "MISCELLANEOUS",
+      "sheet_start": 93,
+      "drawings": [
+        {
+          "drawing_no": "CDD-LP-301",
+          "title": "LUGS AND TIE RODS",
+          "sheet": 93
+        },
+        {
+          "drawing_no": "CDD-LP-302",
+          "title": "PLAIN & BELL BANDS / PLATE WASHERS & TIE BOLTS",
+          "sheet": 94
+        },
+        {
+          "drawing_no": "CDD-LP-303",
+          "title": "RUBBER GASKET JOINT BELL",
+          "sheet": 95
+        },
+        {
+          "drawing_no": "CDD-LPHP-304",
+          "title": "MINIMUM CLEARANCE BETWEEN TIEBACKS AND CDD FACILITIES",
+          "sheet": 96
+        },
+        {
+          "drawing_no": "CDD-HP-401",
+          "title": "AWSS MONITORING POINT FOR BELL AND SPIGOT PIPE (HPL-5993)",
+          "sheet": 97
+        },
+        {
+          "drawing_no": "CDD-HP-402",
+          "title": "AWSS MONITORING POINT FOR DOUBLE SPIGOT PIPE (HPL-5993.1)",
+          "sheet": 98
+        },
+        {
+          "drawing_no": "CDD-LP-501",
+          "title": "TYPICAL METHOD FOR MEASURING, RECORDING AND IDENTIFYING MAINS, SERVICES, GATE VALVES AND ALL APPURTENANCES",
+          "sheet": 99
+        },
+        {
+          "drawing_no": "CDD-LP-502",
+          "title": "MINIMUM INFORMATION REQUIRED FOR DOMESTIC AND RECYCLED WATER AS-BUILT DRAWINGS",
+          "sheet": 100
+        },
+        {
+          "drawing_no": "CDD-LPHP-503",
+          "title": "MINIMUM OPERATING DIMENSIONS FOR SFWD GATE TRUCKS",
+          "sheet": 101
+        },
+        {
+          "drawing_no": "CDD-LP-504A",
+          "title": "SHORING SUPPORT FOR MAIN CONNECTION <5' DEEP (PLAN)",
+          "sheet": 102
+        },
+        {
+          "drawing_no": "CDD-LP-504B",
+          "title": "SHORING SUPPORT FOR MAIN CONNECTION <5' DEEP (SECTION)",
+          "sheet": 103
+        }
+      ]
+    }
+  ]
+}
