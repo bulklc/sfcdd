@@ -222,19 +222,13 @@
             accordionHTML += `
               <div class="accordion-item">
                 <h2 class="accordion-header" id="heading-cat-${catIndex}">
-                  <button class="accordion-button category-level ${
-                    catIndex !== 0 ? "collapsed" : ""
-                  }" type="button"
+                  <button class="accordion-button category-level collapsed" type="button"
                           data-bs-toggle="collapse" data-bs-target="#${categoryId}"
-                          aria-expanded="${
-                            catIndex === 0 ? "true" : "false"
-                          }" aria-controls="${categoryId}">
+                          aria-expanded="false" aria-controls="${categoryId}">
                     ${category.category}
                   </button>
                 </h2>
-                <div id="${categoryId}" class="accordion-collapse collapse ${
-              catIndex === 0 ? "show" : ""
-            }"
+                <div id="${categoryId}" class="accordion-collapse collapse"
                      aria-labelledby="heading-cat-${catIndex}" data-bs-parent="#plansAccordion">
                   <div class="accordion-body p-0">
                     <div class="accordion accordion-nested" id="accordion-${categoryId}">
@@ -246,23 +240,24 @@
               const hasDrawings =
                 section.drawings && section.drawings.length > 0;
 
+              // First section of first category should be expanded
+              const isFirstSection = catIndex === 0 && secIndex === 0;
+
               accordionHTML += `
                 <div class="accordion-item">
                   <h2 class="accordion-header" id="heading-sec-${catIndex}-${secIndex}">
                     <button class="accordion-button section-level ${
-                      secIndex !== 0 ? "collapsed" : ""
+                      isFirstSection ? "" : "collapsed"
                     }" type="button"
                             data-bs-toggle="collapse" data-bs-target="#${sectionId}"
                             aria-expanded="${
-                              secIndex === 0 && catIndex === 0
-                                ? "true"
-                                : "false"
+                              isFirstSection ? "true" : "false"
                             }" aria-controls="${sectionId}">
                       ${section.section}
                     </button>
                   </h2>
                   <div id="${sectionId}" class="accordion-collapse collapse ${
-                secIndex === 0 && catIndex === 0 ? "show" : ""
+                isFirstSection ? "show" : ""
               }"
                        aria-labelledby="heading-sec-${catIndex}-${secIndex}" data-bs-parent="#accordion-${categoryId}">
                     <div class="accordion-body p-0">
