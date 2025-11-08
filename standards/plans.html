@@ -16,7 +16,9 @@
         --primary-blue: #017dc3;
         --primary-yellow: #fdb813;
         --primary-green: #8ac73e;
-        --faded-blue: #5ba9d6;
+        --faded-blue: #8bbbd8;
+        --faded-yellow: #fae8c6;
+        --faded-green: #b8dc8f;
         --navbar-height: 72px;
       }
 
@@ -158,9 +160,10 @@
         transition: background-color 0.2s ease;
         text-decoration: none;
         color: inherit;
+        cursor: pointer;
       }
       .drawing-item:hover {
-        background-color: #f8f9fa;
+        background-color: var(--faded-yellow);
         text-decoration: none;
       }
       .drawing-item:last-child {
@@ -169,15 +172,21 @@
       .drawing-no {
         font-weight: 600;
         color: var(--primary-blue);
+        user-select: text;
+        cursor: text;
       }
       .drawing-title {
         color: #333;
         margin-left: 1rem;
+        user-select: text;
+        cursor: text;
       }
       .sheet-number {
         color: #666;
         font-size: 0.9rem;
         margin-left: auto;
+        user-select: text;
+        cursor: text;
       }
     </style>
   </head>
@@ -195,7 +204,7 @@
     <!-- Bootstrap JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Include the navbar JavaScript -->
-    <script src="../js/navbar.js"></script>
+    <script src="../tools/navbar.js"></script>
     <script>
       // Load and display plans data
       async function loadPlans() {
@@ -215,8 +224,8 @@
                 <h2 class="accordion-header" id="heading-cat-${catIndex}">
                   <button class="accordion-button category-level ${
                     catIndex !== 0 ? "collapsed" : ""
-                  }" type="button" 
-                          data-bs-toggle="collapse" data-bs-target="#${categoryId}" 
+                  }" type="button"
+                          data-bs-toggle="collapse" data-bs-target="#${categoryId}"
                           aria-expanded="${
                             catIndex === 0 ? "true" : "false"
                           }" aria-controls="${categoryId}">
@@ -225,7 +234,7 @@
                 </h2>
                 <div id="${categoryId}" class="accordion-collapse collapse ${
               catIndex === 0 ? "show" : ""
-            }" 
+            }"
                      aria-labelledby="heading-cat-${catIndex}" data-bs-parent="#plansAccordion">
                   <div class="accordion-body p-0">
                     <div class="accordion accordion-nested" id="accordion-${categoryId}">
@@ -242,8 +251,8 @@
                   <h2 class="accordion-header" id="heading-sec-${catIndex}-${secIndex}">
                     <button class="accordion-button section-level ${
                       secIndex !== 0 ? "collapsed" : ""
-                    }" type="button" 
-                            data-bs-toggle="collapse" data-bs-target="#${sectionId}" 
+                    }" type="button"
+                            data-bs-toggle="collapse" data-bs-target="#${sectionId}"
                             aria-expanded="${
                               secIndex === 0 && catIndex === 0
                                 ? "true"
@@ -254,7 +263,7 @@
                   </h2>
                   <div id="${sectionId}" class="accordion-collapse collapse ${
                 secIndex === 0 && catIndex === 0 ? "show" : ""
-              }" 
+              }"
                        aria-labelledby="heading-sec-${catIndex}-${secIndex}" data-bs-parent="#accordion-${categoryId}">
                     <div class="accordion-body p-0">
               `;
@@ -264,11 +273,11 @@
                 section.drawings.forEach((drawing) => {
                   const viewerPath = `/tools/doc_viewer.html?pdf=${drawing.drawing_no}&source=plans&back=/standards/plans.html`;
                   accordionHTML += `
-                    <a href="${viewerPath}" target="_blank" class="drawing-item d-flex align-items-center">
+                    <div class="drawing-item d-flex align-items-center" data-href="${viewerPath}">
                       <span class="drawing-no">${drawing.drawing_no}</span>
                       <span class="drawing-title flex-grow-1">${drawing.title}</span>
                       <span class="sheet-number">Sheet ${drawing.sheet}</span>
-                    </a>
+                    </div>
                   `;
                 });
               } else {
@@ -294,7 +303,38 @@
             `;
           });
 
+          accordionHTML += `</div>`;
+
           accordion.innerHTML = accordionHTML;
+
+          // Add click handlers to drawing items
+          document.querySelectorAll(".drawing-item").forEach((item) => {
+            item.addEventListener("mousedown", function (e) {
+              this.dataset.mouseDownTime = Date.now();
+              this.dataset.mouseDownX = e.clientX;
+              this.dataset.mouseDownY = e.clientY;
+            });
+
+            item.addEventListener("mouseup", function (e) {
+              const mouseUpTime = Date.now();
+              const timeDiff =
+                mouseUpTime - parseInt(this.dataset.mouseDownTime);
+              const xDiff = Math.abs(
+                e.clientX - parseInt(this.dataset.mouseDownX)
+              );
+              const yDiff = Math.abs(
+                e.clientY - parseInt(this.dataset.mouseDownY)
+              );
+
+              // Only navigate if it's a quick click without much movement (not a text selection)
+              if (timeDiff < 300 && xDiff < 5 && yDiff < 5) {
+                const selection = window.getSelection();
+                if (!selection.toString()) {
+                  window.open(this.dataset.href, "_blank");
+                }
+              }
+            });
+          });
         } catch (error) {
           console.error("Error loading plans:", error);
           document.getElementById("plansAccordion").innerHTML = `

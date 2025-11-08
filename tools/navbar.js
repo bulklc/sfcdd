@@ -7,6 +7,9 @@ function loadNavbar() {
         --primary-blue: #017dc3;
         --primary-yellow: #fdb813;
         --primary-green: #8ac73e;
+        --faded-blue: #8bbbd8;
+        --faded-yellow: #fae8c6;
+        --faded-green: #b8dc8f;
       }
       .custom-navbar {
         background-color: var(--primary-blue) !important;
@@ -24,7 +27,7 @@ function loadNavbar() {
         transition: all 0.3s ease;
       }
       .nav-link:hover {
-        color: var(--primary-yellow) !important;
+        color: var(--faded-yellow) !important;
       }
       .dropdown-toggle::after {
         margin-left: 0.5rem;
@@ -41,8 +44,7 @@ function loadNavbar() {
         transition: all 0.3s ease;
       }
       .dropdown-item:hover {
-        background-color: var(--primary-yellow);
-        color: white;
+        background-color: var(--faded-yellow);
       }
       .dropdown-item:first-child:hover {
         border-radius: 0.5rem 0.5rem 0 0;
@@ -53,7 +55,7 @@ function loadNavbar() {
     </style>
     <nav class="navbar navbar-expand-lg custom-navbar">
       <div class="container-fluid">
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation" style="background-color: var(--primary-yellow);">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation" style="background-color: var(--faded-yellow);">
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
