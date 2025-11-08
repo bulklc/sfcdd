@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title id="page-title">PDF Viewer - SFCDD</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="../favicon.png" />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, sans-serif;
+        height: 100vh;
+        overflow: hidden;
+        background-color: #525659;
+      }
+
+      .pdf-container {
+        width: 100%;
+        height: 100vh;
+      }
+
+      .pdf-frame {
+        width: 100%;
+        height: 100%;
+        border: none;
+        display: block;
+      }
+
+      .error-message {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        background-color: #f8f9fa;
+        color: #721c24;
+        font-size: 1.2rem;
+        padding: 2rem;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="pdf-container">
+      <iframe
+        id="pdf-frame"
+        class="pdf-frame"
+        title="PDF Viewer"
+        src=""
+      ></iframe>
+    </div>
+
+    <script>
+      // Parse URL parameters
+      const urlParams = new URLSearchParams(window.location.search);
+      const pdfParam = urlParams.get("pdf");
+      const dataSource = urlParams.get("source"); // e.g., "plans" or "specs"
+      const backUrl = urlParams.get("back") || "../index.html";
+
+      // Load data to get drawing/document information
+      async function loadDrawingInfo() {
+        if (!pdfParam) {
+          showError("No PDF specified");
+          return;
+        }
+
+        if (!dataSource) {
+          showError("No data source specified");
+          return;
+        }
+
+        try {
+          const response = await fetch(`../standards/${dataSource}.json`);
+          const data = await response.json();
+
+          // Find the drawing information
+          let drawingInfo = null;
+          for (const category of data.categories) {
+            for (const section of category.sections) {
+              if (section.drawings) {
+                const found = section.drawings.find(
+                  (d) => d.drawing_no === pdfParam
+                );
+                if (found) {
+                  drawingInfo = found;
+                  break;
+                }
+              }
+            }
+            if (drawingInfo) break;
+          }
+
+          if (drawingInfo) {
+            // Update page title
+            document.getElementById("page-title").textContent = `${
+              drawingInfo.drawing_no
+            } - ${drawingInfo.title.substring(0, 50)}${
+              drawingInfo.title.length > 50 ? "..." : ""
+            } - SFCDD`;
+
+            // Set up PDF link
+            const pdfPath = `../standards/${dataSource}/${pdfParam}.pdf`;
+            document.getElementById("pdf-frame").src = pdfPath;
+          } else {
+            showError(
+              `Drawing "${pdfParam}" not found in ${dataSource} database`
+            );
+          }
+        } catch (error) {
+          console.error("Error loading drawing info:", error);
+          // Still show the PDF even if we can't load the metadata
+          const pdfPath = `../standards/${dataSource}/${pdfParam}.pdf`;
+          document.getElementById(
+            "page-title"
+          ).textContent = `${pdfParam} - SFCDD`;
+          document.getElementById("pdf-frame").src = pdfPath;
+        }
+      }
+
+      function showError(message) {
+        document.querySelector(".pdf-container").innerHTML = `
+          <div class="error-message">
+            <div>
+              <strong>Error:</strong> ${message}
+              <br><br>
+              <a href="${backUrl}" style="color: #017dc3; text-decoration: underline;">Go Back</a>
+            </div>
+          </div>
+        `;
+      }
+
+      // Load drawing info on page load
+      loadDrawingInfo();
+    </script>
+  </body>
+</html>
