@@ -1,5 +1,5 @@
 // Function to load the navbar
-function loadNavbar() {
+function loadNavbar(pageTitle = "SFCDD") {
   // Build the navbar HTML with Bootstrap dropdown
   const navbarHTML = `
     <style>
@@ -71,7 +71,7 @@ function loadNavbar() {
             </li>
           </ul>
         </div>
-        <a class="navbar-brand ms-auto" href="/">SFCDD</a>
+        <a class="navbar-brand ms-auto" href="/">${pageTitle}</a>
       </div>
     </nav>
   `;
@@ -84,4 +84,4 @@ function loadNavbar() {
 }
 
 // Load navbar when DOM is ready
-document.addEventListener("DOMContentLoaded", loadNavbar);
+document.addEventListener("DOMContentLoaded", () => loadNavbar());

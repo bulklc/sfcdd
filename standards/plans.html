@@ -41,7 +41,6 @@
         height: var(--navbar-height);
       }
 
-      /* Make main container fill remaining height WITHOUT scrollbar */
       main.container {
         position: fixed;
         top: var(--navbar-height);
@@ -183,7 +182,7 @@
       /* Mobile-specific compact accordion body */
       @media (max-width: 575px) {
         .accordion-nested .accordion-body {
-          max-height: calc(40vh - var(--navbar-height) - 2rem);
+          max-height: calc(50vh - var(--navbar-height) - 2rem);
         }
       }
 
@@ -256,7 +255,7 @@
     <nav id="navbar"></nav>
 
     <main class="container mt-4">
-      <h1 class="mb-4">City Distribution Division Standard Plans</h1>
+      <!-- <h1 class="mb-4">City Distribution Division Standard Plans</h1> -->
       <div id="plansAccordion" class="accordion">
         <!-- Accordion will be populated by JavaScript -->
       </div>
@@ -267,6 +266,11 @@
     <!-- Include the navbar JavaScript -->
     <script src="../tools/navbar.js"></script>
     <script>
+      // Load navbar with page title
+      document.addEventListener("DOMContentLoaded", () =>
+        loadNavbar("Standard Plans")
+      );
+
       // Load and display plans data
       async function loadPlans() {
         try {
