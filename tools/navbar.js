@@ -67,6 +67,7 @@ function loadNavbar(pageTitle = "SFCDD") {
               <ul class="dropdown-menu" aria-labelledby="standardsDropdown">
                 <li><a class="dropdown-item" href="/standards/plans.html">Plans</a></li>
                 <li><a class="dropdown-item" href="/standards/specs.html">Specs</a></li>
+                <li><a class="dropdown-item" href="/standards/other.html">Other</a></li>
               </ul>
             </li>
           </ul>

@@ -5,7 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title id="page-title">PDF Viewer - SFCDD</title>
     <!-- Favicon -->
-    <link rel="icon" type="image/png" href="../favicon.png" />
+    <!-- Modern browsers -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <!-- Fallback for older browsers -->
+    <link rel="icon" type="image/png" href="/favicon.png" />
     <style>
       * {
         margin: 0;
@@ -82,7 +85,15 @@
           return;
         }
 
-        const pdfPath = `../standards/${dataSource}/${pdfParam}.pdf`;
+        // Map source names to correct folder names
+        const folderMap = {
+          plans: "plan_pdfs",
+          specs: "spec_pdfs",
+          other: "other_pdfs",
+        };
+
+        const folderName = folderMap[dataSource] || dataSource;
+        const pdfPath = `../standards/${folderName}/${pdfParam}.pdf`;
 
         // If mobile device, redirect directly to PDF
         if (isMobileDevice()) {
@@ -96,19 +107,37 @@
 
           // Find the drawing information
           let drawingInfo = null;
-          for (const category of data.categories) {
-            for (const section of category.sections) {
-              if (section.drawings) {
-                const found = section.drawings.find(
-                  (d) => d.drawing_no === pdfParam
-                );
-                if (found) {
-                  drawingInfo = found;
-                  break;
+
+          // Handle different JSON structures
+          if (data.categories) {
+            // plans.json structure
+            for (const category of data.categories) {
+              for (const section of category.sections) {
+                if (section.drawings) {
+                  const found = section.drawings.find(
+                    (d) => d.drawing_no === pdfParam
+                  );
+                  if (found) {
+                    drawingInfo = found;
+                    break;
+                  }
                 }
               }
+              if (drawingInfo) break;
             }
-            if (drawingInfo) break;
+          } else if (data.sections) {
+            // specs.json or other.json structure
+            const found = data.sections.find(
+              (s) =>
+                (s.file_name || s.section_number.replace(/ /g, "_")) ===
+                pdfParam
+            );
+            if (found) {
+              drawingInfo = {
+                drawing_no: found.section_number,
+                title: found.title,
+              };
+            }
           }
 
           if (drawingInfo) {
@@ -123,11 +152,11 @@
             document.getElementById("pdf-frame").src = pdfPath;
           } else {
             showError(
-              `Drawing "${pdfParam}" not found in ${dataSource} database`
+              `Document "${pdfParam}" not found in ${dataSource} database`
             );
           }
         } catch (error) {
-          console.error("Error loading drawing info:", error);
+          console.error("Error loading document info:", error);
           // Still show the PDF even if we can't load the metadata
           document.getElementById(
             "page-title"
