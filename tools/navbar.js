@@ -10,6 +10,8 @@ function loadNavbar(pageTitle = "SFCDD") {
         --faded-blue: #8bbbd8;
         --faded-yellow: #fae8c6;
         --faded-green: #b8dc8f;
+        --font-size-base: 1rem;
+        --font-size-large: 1.25rem;
       }
       .custom-navbar {
         background-color: var(--primary-blue) !important;
@@ -19,11 +21,12 @@ function loadNavbar(pageTitle = "SFCDD") {
       .navbar-brand {
         color: white !important;
         font-weight: bold;
-        font-size: 1.5rem;
+        font-size: var(--font-size-large);
       }
       .nav-link {
         color: white !important;
         font-weight: 500;
+        font-size: var(--font-size-large);
         transition: all 0.3s ease;
       }
       .nav-link:hover {
@@ -41,6 +44,7 @@ function loadNavbar(pageTitle = "SFCDD") {
       .dropdown-item {
         color: var(--primary-blue);
         padding: 0.75rem 1.5rem;
+        font-size: var(--font-size-large);
         transition: all 0.3s ease;
       }
       .dropdown-item:hover {

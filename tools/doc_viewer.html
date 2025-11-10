@@ -10,6 +10,11 @@
     <!-- Fallback for older browsers -->
     <link rel="icon" type="image/png" href="/favicon.png" />
     <style>
+      :root {
+        --font-size-base: 1rem;
+        --font-size-large: 1.25rem;
+      }
+
       * {
         margin: 0;
         padding: 0;
@@ -22,6 +27,7 @@
         height: 100vh;
         overflow: hidden;
         background-color: #525659;
+        font-size: var(--font-size-base);
       }
 
       .pdf-container {
@@ -43,9 +49,13 @@
         height: 100%;
         background-color: #f8f9fa;
         color: #721c24;
-        font-size: 1.2rem;
+        font-size: var(--font-size-large);
         padding: 2rem;
         text-align: center;
+      }
+
+      .error-message a {
+        font-size: var(--font-size-base);
       }
     </style>
   </head>

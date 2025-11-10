@@ -23,6 +23,8 @@
         --faded-yellow: #fae8c6;
         --faded-green: #b8dc8f;
         --navbar-height: 72px;
+        --font-size-base: 1rem;
+        --font-size-large: 1.25rem;
       }
 
       /* Make html and body full height */
@@ -32,6 +34,7 @@
         margin: 0;
         padding: 0;
         overflow: hidden;
+        font-size: var(--font-size-base);
       }
 
       /* Make navbar fixed at top */
@@ -61,11 +64,6 @@
       @media (max-width: 575px) {
         main.container {
           padding: 0.5rem;
-        }
-
-        h1 {
-          font-size: 1.25rem;
-          margin-bottom: 0.5rem !important;
         }
       }
 
@@ -116,21 +114,13 @@
         text-decoration: none;
         color: inherit;
         cursor: pointer;
+        font-size: var(--font-size-base);
       }
 
       /* Mobile-specific compact doc items */
       @media (max-width: 575px) {
         .doc-item {
           padding: 0.5rem 0.5rem;
-        }
-
-        .doc-number {
-          font-size: 0.85rem;
-        }
-
-        .doc-title {
-          font-size: 0.8rem;
-          margin-top: 0.25rem;
         }
       }
 
@@ -146,12 +136,14 @@
         color: var(--primary-blue);
         user-select: text;
         cursor: text;
+        font-size: var(--font-size-base);
       }
       .doc-title {
         color: #333;
         margin-top: 0.25rem;
         user-select: text;
         cursor: text;
+        font-size: var(--font-size-base);
       }
 
       .docs-list {
@@ -178,7 +170,7 @@
     <script>
       // Load navbar with page title
       document.addEventListener("DOMContentLoaded", () =>
-        loadNavbar("Other Standard Documents")
+        loadNavbar("Other Docs")
       );
 
       // Load and display docs data
