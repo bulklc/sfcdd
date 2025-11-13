@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cost Estimator - SFCDD</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <!-- D3.js for sunburst chart -->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+      :root {
+        --primary-blue: #017dc3;
+        --primary-yellow: #fdb813;
+        --primary-green: #8ac73e;
+        --navbar-height: 72px;
+        --font-size-base: 1rem;
+      }
+
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        font-size: var(--font-size-base);
+      }
+
+      #navbar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1000;
+        height: var(--navbar-height);
+      }
+
+      main.container {
+        position: fixed;
+        top: var(--navbar-height);
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: calc(100vh - var(--navbar-height));
+        overflow-y: auto;
+        padding: 2rem;
+        max-width: 100%;
+        box-sizing: border-box;
+      }
+
+      #sunburst {
+        width: 100%;
+        height: calc(100vh - var(--navbar-height) - 4rem);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .sunburst-arc {
+        cursor: pointer;
+        stroke: #fff;
+        stroke-width: 2;
+      }
+
+      .sunburst-arc:hover {
+        opacity: 0.8;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation bar container -->
+    <nav id="navbar"></nav>
+
+    <main class="container">
+      <div id="sunburst"></div>
+    </main>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Include the navbar JavaScript -->
+    <script src="/tools/navbar.js"></script>
+    <script>
+      // Load navbar
+      document.addEventListener("DOMContentLoaded", () =>
+        loadNavbar("Cost Estimator")
+      );
+
+      // Load data and create sunburst chart
+      async function loadSunburstChart() {
+        try {
+          const response = await fetch(
+            "cost_data/stnd_2025_04_01_to_2026_03_31.json"
+          );
+          const data = await response.json();
+
+          // Group data by Class
+          const classGroups = d3.group(data, (d) => d.Class);
+
+          // Create hierarchy data structure with equal values for equal segments
+          const hierarchyData = {
+            name: "root",
+            children: Array.from(classGroups, ([className, items]) => ({
+              name: className,
+              value: 1,
+              children: [],
+            })),
+          };
+
+          // Set up dimensions
+          const container = document.getElementById("sunburst");
+          const width = Math.min(container.clientWidth, container.clientHeight);
+          const height = width;
+          const radius = width / 2;
+
+          // Create SVG
+          const svg = d3
+            .select("#sunburst")
+            .append("svg")
+            .attr("width", width)
+            .attr("height", height)
+            .append("g")
+            .attr(
+              "transform",
+              `translate(${width / 2},${height / 2}) rotate(0)`
+            );
+
+          const TWO_PI = 2 * Math.PI;
+          const normalizeAngle = (angle) => {
+            const normalized = angle % TWO_PI;
+            return normalized < 0 ? normalized + TWO_PI : normalized;
+          };
+          const shortestAngularDelta = (start, end) => {
+            let delta = end - start;
+            if (delta > Math.PI) {
+              delta -= TWO_PI;
+            } else if (delta < -Math.PI) {
+              delta += TWO_PI;
+            }
+            return delta;
+          };
+
+          // Create partition layout
+          const partition = d3.partition().size([2 * Math.PI, radius]);
+
+          // Create hierarchy
+          const root = d3.hierarchy(hierarchyData).sum((d) => d.value);
+
+          partition(root);
+
+          // Create custom color scale with more pleasing, harmonious colors
+          const baseColors = [
+            "#017dc3", // primary blue
+            "#4a9acc", // lighter blue
+            "#8bbbd8", // faded blue
+            "#5a9fc7", // medium blue
+            "#0165a0", // darker blue
+            "#7ab330", // primary green (adjusted)
+            "#a3d96a", // medium green
+            "#b8dc8f", // faded green
+            "#8fc83b", // lighter green
+            "#6b9e2d", // darker green
+            "#e5a410", // darker yellow/gold
+            "#f4c145", // medium yellow/gold
+            "#fcd788", // light yellow/gold
+            "#d89b0d", // bronze
+            "#c78a2e", // warm gold
+          ];
+
+          const color = d3.scaleOrdinal(baseColors);
+
+          // Create arc generator
+          const arc = d3
+            .arc()
+            .startAngle((d) => d.x0)
+            .endAngle((d) => d.x1)
+            .innerRadius((d) => d.y0)
+            .outerRadius((d) => d.y1);
+
+          // Track current state
+          let selectedSegment = null; // Track the selected segment
+          let isExpanded = false; // Track if a segment is expanded
+
+          // Function to expand/shrink segments
+          function updateSegmentSizes(selectedData, expand = true) {
+            if (expand) {
+              const targetSize = (300 * Math.PI) / 180; // 300 degrees in radians
+              const remainingSize = 2 * Math.PI - targetSize; // Remaining space (60 degrees)
+
+              // Create a mapping of segment names to their original indices
+              const segmentOrder = {};
+              hierarchyData.children.forEach((child, index) => {
+                segmentOrder[child.name] = index;
+              });
+
+              // Get the selected segment's original index
+              const selectedIndex = segmentOrder[selectedData.data.name];
+              const totalSegments = hierarchyData.children.length;
+
+              // Calculate segment size
+              const segmentSize = (2 * Math.PI) / totalSegments;
+
+              // Calculate the original angles
+              const originalStartAngle = selectedIndex * segmentSize;
+              const originalEndAngle = (selectedIndex + 1) * segmentSize;
+              const originalMidpoint =
+                (originalStartAngle + originalEndAngle) / 2;
+
+              // Calculate where the expanded segment should start to keep it centered
+              const expandedStartAngle = originalMidpoint - targetSize / 2;
+              const expandedEndAngle = originalMidpoint + targetSize / 2;
+
+              // Calculate the opposite side (180 degrees from the midpoint)
+              let oppositeMidpoint = originalMidpoint + Math.PI;
+              if (oppositeMidpoint >= 2 * Math.PI) {
+                oppositeMidpoint -= 2 * Math.PI;
+              }
+
+              // Center the remaining segments on the opposite side
+              let remainingStartAngle = oppositeMidpoint - remainingSize / 2;
+              if (remainingStartAngle < 0) {
+                remainingStartAngle += 2 * Math.PI;
+              }
+
+              // Create ordered list of segments in circular order starting after the selected segment
+              const otherSegments = [];
+              for (let i = 1; i < totalSegments; i++) {
+                const currentIndex = (selectedIndex + i) % totalSegments;
+                const segment = root
+                  .descendants()
+                  .find(
+                    (d) =>
+                      d.depth > 0 && segmentOrder[d.data.name] === currentIndex
+                  );
+                if (segment) {
+                  otherSegments.push(segment);
+                }
+              }
+
+              const otherSegmentSize = remainingSize / otherSegments.length;
+
+              // Update angles for the selected segment
+              selectedData.x0 = expandedStartAngle;
+              selectedData.x1 = expandedEndAngle;
+
+              // Place other segments in circular order on the opposite side
+              let currentAngle = remainingStartAngle;
+              otherSegments.forEach((d) => {
+                d.x0 = currentAngle;
+                d.x1 = currentAngle + otherSegmentSize;
+                currentAngle += otherSegmentSize;
+
+                // Wrap around if necessary
+                if (currentAngle >= 2 * Math.PI) {
+                  currentAngle -= 2 * Math.PI;
+                }
+              });
+            } else {
+              // Reset to equal sizes based on original order
+              const segmentSize = (2 * Math.PI) / hierarchyData.children.length;
+
+              // Create a mapping of segment names to their original indices
+              const segmentOrder = {};
+              hierarchyData.children.forEach((child, index) => {
+                segmentOrder[child.name] = index;
+              });
+
+              root.descendants().forEach((d) => {
+                if (d.depth > 0) {
+                  // Find the original index of this segment
+                  const originalIndex = segmentOrder[d.data.name];
+
+                  // Calculate angles based on original position
+                  d.x0 = originalIndex * segmentSize;
+                  d.x1 = (originalIndex + 1) * segmentSize;
+                }
+              });
+            }
+
+            // Animate the arc changes
+            svg
+              .selectAll("path")
+              .transition()
+              .duration(500)
+              .attrTween("d", function (d) {
+                const startX0 =
+                  this._currentX0 !== undefined ? this._currentX0 : d.x0;
+                const startX1 =
+                  this._currentX1 !== undefined ? this._currentX1 : d.x1;
+
+                const deltaX0 = shortestAngularDelta(startX0, d.x0);
+                const deltaX1 = shortestAngularDelta(startX1, d.x1);
+
+                return function (t) {
+                  const tempD = { ...d };
+                  const interpolatedX0 = startX0 + deltaX0 * t;
+                  const interpolatedX1 = startX1 + deltaX1 * t;
+
+                  tempD.x0 = normalizeAngle(interpolatedX0);
+                  tempD.x1 = normalizeAngle(interpolatedX1);
+
+                  if (tempD.x1 <= tempD.x0) {
+                    tempD.x1 += TWO_PI;
+                  }
+
+                  return arc(tempD);
+                };
+              })
+              .on("end", function (d) {
+                this._currentX0 = d.x0;
+                this._currentX1 = d.x1;
+              });
+
+            // Update label positions
+            labels
+              .transition()
+              .duration(500)
+              .attr("transform", function (d) {
+                const [x, y] = arc.centroid(d);
+                let angle = (((d.x0 + d.x1) / 2) * 180) / Math.PI - 90;
+                // Flip labels between 6 o'clock and noon
+                if (angle < -90 || angle > 90) {
+                  angle += 180;
+                }
+                return `translate(${x},${y}) rotate(${angle})`;
+              });
+          }
+
+          // Draw arcs
+          const arcs = svg
+            .selectAll("path")
+            .data(root.descendants().filter((d) => d.depth > 0))
+            .join("path")
+            .attr("class", "sunburst-arc")
+            .attr("d", arc)
+            .style("fill", (d) => color(d.data.name))
+            .style("opacity", 0.85) // Set default opacity
+            .each(function (d) {
+              // Initialize current angles for smooth transitions
+              this._currentX0 = d.x0;
+              this._currentX1 = d.x1;
+            })
+            .append("title")
+            .text((d) => `${d.data.name}`);
+
+          // Add labels for each segment, angled along the arc and flipped if needed
+          const labels = svg
+            .selectAll("text")
+            .data(root.descendants().filter((d) => d.depth > 0))
+            .join("text")
+            .attr("transform", function (d) {
+              const [x, y] = arc.centroid(d);
+              let angle = (((d.x0 + d.x1) / 2) * 180) / Math.PI - 90;
+              // Flip labels between 6 o'clock and noon
+              if (angle < -90 || angle > 90) {
+                angle += 180;
+              }
+              return `translate(${x},${y}) rotate(${angle})`;
+            })
+            .attr("text-anchor", "middle")
+            .attr("alignment-baseline", "middle")
+            .attr("font-size", "1rem")
+            .attr("font-weight", "bold")
+            .attr("fill", "#1a1a1a")
+            .attr("pointer-events", "none")
+            .text((d) => d.data.name);
+
+          // Add hover handlers to path elements
+          svg
+            .selectAll("path")
+            .on("mouseenter", function (event, d) {
+              // Only apply hover if no segment is selected
+              if (!selectedSegment) {
+                d3.select(this).style("opacity", 1);
+              }
+            })
+            .on("mouseleave", function (event, d) {
+              // Only reset hover if no segment is selected
+              if (!selectedSegment) {
+                d3.select(this).style("opacity", 0.85);
+              }
+            });
+
+          // Add click handler after both arcs and labels are defined
+          svg.selectAll("path").on("click", (event, d) => {
+            console.log("Clicked:", d.data.name);
+
+            // Check if clicking the same segment again (deselect)
+            if (selectedSegment === d) {
+              // First, restore segment opacity
+              svg
+                .selectAll("path")
+                .transition()
+                .duration(300)
+                .style("opacity", 0.85); // Return to default opacity
+
+              // Then expand segments back to normal
+              setTimeout(() => {
+                updateSegmentSizes(null, false);
+                isExpanded = false;
+
+                // Finally, restore labels after segments have resized
+                setTimeout(() => {
+                  labels.transition().duration(300).style("opacity", 1);
+                }, 500); // Wait for segment resize to complete
+              }, 300); // Wait for opacity restoration
+
+              selectedSegment = null;
+            } else {
+              // Selecting a new segment
+              selectedSegment = d;
+
+              // First, hide all labels and fade segments except the clicked one
+              labels
+                .transition()
+                .duration(300)
+                .style("opacity", (segment) => (segment === d ? 1 : 0));
+
+              svg
+                .selectAll("path")
+                .transition()
+                .duration(300)
+                .style("opacity", (segment) => (segment === d ? 1 : 0.2));
+
+              // Wait for labels to fade, then expand the selected segment
+              setTimeout(() => {
+                updateSegmentSizes(d, true);
+                isExpanded = true;
+              }, 300); // Wait for labels to disappear and segments to fade
+            }
+          });
+        } catch (error) {
+          console.error("Error loading chart data:", error);
+          document.getElementById("sunburst").innerHTML = `
+            <div class="alert alert-danger" role="alert">
+              Error loading equipment data. Please try again later.
+            </div>
+          `;
+        }
+      }
+
+      // Load chart when DOM is ready
+      document.addEventListener("DOMContentLoaded", loadSunburstChart);
+    </script>
+  </body>
+</html>

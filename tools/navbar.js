@@ -19,7 +19,7 @@ function loadNavbar(pageTitle = "SFCDD") {
         box-shadow: 0 2px 4px rgba(0,0,0,0.1);
       }
       .navbar-brand {
-        color: white !important;
+        color: var(--primary-yellow) !important;
         font-weight: bold;
         font-size: var(--font-size-large);
       }
@@ -72,6 +72,14 @@ function loadNavbar(pageTitle = "SFCDD") {
                 <li><a class="dropdown-item" href="/standards/plans.html">Plans</a></li>
                 <li><a class="dropdown-item" href="/standards/specs.html">Specs</a></li>
                 <li><a class="dropdown-item" href="/standards/other.html">Other</a></li>
+              </ul>
+            </li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="cmDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Construction Management
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="cmDropdown">
+                <li><a class="dropdown-item" href="/cm/general_tools/costs/estimator.html">Cost Estimator</a></li>
               </ul>
             </li>
           </ul>
