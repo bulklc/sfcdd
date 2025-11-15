@@ -204,7 +204,16 @@
       .equipment-table {
         width: 100%;
         margin-bottom: 0;
-        font-size: 0.75rem; /* Reduced font size */
+        font-size: 0.75rem;
+        table-layout: fixed !important;
+      }
+
+      .equipment-table col.col-standard {
+        width: calc((100% - 12%) / 9);
+      }
+
+      .equipment-table col.col-total {
+        width: 12%;
       }
 
       .equipment-table thead {
@@ -216,7 +225,7 @@
       }
 
       .equipment-table th {
-        padding: 0.5rem 0.25rem; /* Reduced padding */
+        padding: 0.5rem 0.5rem; /* Reduced padding */
         font-weight: 600;
         font-size: 0.7rem; /* Reduced font size */
         border-bottom: 2px solid var(--primary-yellow);
@@ -244,6 +253,33 @@
         vertical-align: middle;
       }
 
+      /* Right-align dollar value columns */
+      .equipment-table td:nth-child(5),  /* Base Rate */
+      .equipment-table td:nth-child(8),  /* Effective Rate */
+      .equipment-table td:nth-child(10), /* Total */
+      .equipment-table td:nth-child(10)  /* Total */ {
+        text-align: right;
+        padding-right: 0.75rem;
+      }
+
+      /* Left-align QTY column with matching padding */
+      .equipment-table td:nth-child(1) {
+        padding-left: 0.75rem;
+      }
+
+      /* Align column headers to match */
+      .equipment-table th:nth-child(1) {
+        /* text-align: left; */
+        padding-left: 0.75rem;
+      }
+
+      .equipment-table th:nth-child(5),  /* Base Rate header */
+      .equipment-table th:nth-child(8),  /* Effective Rate header */
+      .equipment-table th:nth-child(10)  /* Total header */ {
+        text-align: right;
+        padding-right: 0.75rem;
+      }
+
       .equipment-table .model-cell {
         font-weight: 600;
         color: var(--primary-blue);
@@ -254,11 +290,56 @@
       }
 
       .equipment-table .qty-input {
-        width: 50px;
+        width: 60px;
         padding: 0.25rem;
         border: 1px solid #dee2e6;
         border-radius: 0.25rem;
         font-size: 0.7rem;
+        text-align: center;
+      }
+
+      .qty-controls {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        justify-content: center;
+      }
+
+      .btn-delete {
+        padding: 0;
+        font-size: 1rem;
+        background-color: white;
+        color: #333;
+        border: 1px solid #333;
+        border-radius: 0.25rem;
+        cursor: pointer;
+        transition: background-color 0.2s;
+        white-space: nowrap;
+        width: 1.5rem;
+        height: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        line-height: 1;
+      }
+
+      .btn-delete:hover {
+        background-color: #e9ecef;
+      }
+
+      .btn-delete svg {
+        width: 1rem;
+        height: 1rem;
+        fill: #333;
+      }
+
+      .hours-input {
+        width: 60px;
+        padding: 0.25rem;
+        border: 1px solid #dee2e6;
+        border-radius: 0.25rem;
+        font-size: 0.7rem;
+        text-align: center;
       }
 
       /* Toggle switch styles */
@@ -335,6 +416,15 @@
         justify-content: flex-end;
       }
 
+      .grand-total {
+        margin-top: 0.75rem;
+        text-align: right;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--primary-blue);
+        display: none;
+      }
+
       .btn-action {
         padding: 0.5rem 1rem;
         font-size: 0.875rem;
@@ -375,6 +465,10 @@
       <div class="right-section">
         <div class="equipment-table-container">
           <table class="equipment-table table" id="equipmentTable">
+            <colgroup>
+              <col class="col-standard" span="9" />
+              <col class="col-total" />
+            </colgroup>
             <thead>
               <tr>
                 <th>QTY</th>
@@ -387,12 +481,11 @@
                 <th>Effective Rate</th>
                 <th>Hours</th>
                 <th>Total</th>
-                <th>Action</th>
               </tr>
             </thead>
             <tbody id="equipmentTableBody">
               <tr>
-                <td colspan="11">
+                <td colspan="10">
                   <div class="empty-state">
                     <div class="empty-state-icon">📋</div>
                     <div class="empty-state-text">
@@ -408,6 +501,7 @@
             </tbody>
           </table>
         </div>
+        <div id="grandTotalDisplay" class="grand-total">Grand Total: $0.00</div>
         <div class="table-actions">
           <button
             class="btn-action btn-clear"
@@ -442,6 +536,50 @@
       const equipmentTableBody = document.getElementById("equipmentTableBody");
       const clearListBtn = document.getElementById("clearListBtn");
       const exportListBtn = document.getElementById("exportListBtn");
+      const grandTotalDisplay = document.getElementById("grandTotalDisplay");
+
+      function formatCurrency(value) {
+        if (value === null || value === undefined) return "N/A";
+        const numeric =
+          typeof value === "string"
+            ? parseFloat(value.replace(/[$,]/g, ""))
+            : value;
+        if (isNaN(numeric)) return "N/A";
+        return numeric.toLocaleString("en-US", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        });
+      }
+
+      function formatCurrencyDisplay(value) {
+        const formatted = formatCurrency(value);
+        return formatted === "N/A" ? "N/A" : `$${formatted}`;
+      }
+
+      function updateGrandTotal() {
+        if (!grandTotalDisplay) return;
+
+        const totalCells = document.querySelectorAll(".total-cell");
+        let sum = 0;
+        let hasValue = false;
+
+        totalCells.forEach((cell) => {
+          const value = parseFloat(cell.textContent.replace(/[$,]/g, ""));
+          if (!isNaN(value)) {
+            hasValue = true;
+            sum += value;
+          }
+        });
+
+        const formatted = sum.toLocaleString("en-US", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        });
+
+        grandTotalDisplay.textContent = `Grand Total: $${
+          hasValue ? formatted : "0.00"
+        }`;
+      }
 
       function addEquipmentToList(equipment) {
         // Check if already in list
@@ -474,7 +612,7 @@
         if (equipmentList.length === 0) {
           equipmentTableBody.innerHTML = `
             <tr>
-              <td colspan="11">
+              <td colspan="10">
                 <div class="empty-state">
                   <div class="empty-state-icon">📋</div>
                   <div class="empty-state-text">
@@ -487,40 +625,62 @@
           `;
           clearListBtn.style.display = "none";
           exportListBtn.style.display = "none";
+          if (grandTotalDisplay) {
+            grandTotalDisplay.style.display = "none";
+            grandTotalDisplay.textContent = "Grand Total: $0.00";
+          }
         } else {
           let rows = "";
           equipmentList.forEach((item, index) => {
-            // Calculate initial factor based on rate type (default "N")
-            const initialFactor = calculateFactor(item, item.rate_type || "N");
+            const rateType = item.rate_type || "N";
+            const initialFactor = calculateFactor(item, rateType);
             const effectiveRate = calculateEffectiveRate(item, initialFactor);
+            const rowTotal = calculateTotal(1, effectiveRate, 8);
 
             rows += `
-              <tr>
-                <td><input type="number" class="qty-input" value="1" min="1" /></td>
-                <td>${item.class}</td>
-                <td>${item.make}</td>
-                <td class="model-cell">${item.model}</td>
-                <td>$${item.rental_rate}</td>
-                <td>
-                  <div class="rate-type-toggle" data-index="${index}">
-                    <button class="rate-type-btn" data-type="D">D</button>
-                    <button class="rate-type-btn active" data-type="N">N</button>
-                    <button class="rate-type-btn" data-type="O">O</button>
-                  </div>
-                </td>
-                <td class="factor-cell" id="factor-${index}">${initialFactor}</td>
-                <td class="effective-rate-cell" id="effective-rate-${index}">$${effectiveRate}</td>
-                <td></td>
-                <td></td>
-                <td class="action-cell">
-                  <button class="btn-remove" onclick="removeEquipmentFromList(${index})">
-                    Remove
-                  </button>
-                </td>
-              </tr>
-            `;
+  <tr>
+    <td>
+      <div class="qty-controls">
+        <input type="number" class="qty-input" value="1" min="1" data-index="${index}" />
+        <button class="btn-delete" onclick="removeEquipmentFromList(${index})">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+          </svg>
+        </button>
+      </div>
+    </td>
+    <td>${item.class}</td>
+    <td>${item.make}</td>
+    <td class="model-cell">${item.model}</td>
+    <td>${formatCurrencyDisplay(item.rental_rate)}</td>
+    <td>
+      <div class="rate-type-toggle" data-index="${index}">
+        <button class="rate-type-btn${
+          rateType === "D" ? " active" : ""
+        }" data-type="D">D</button>
+        <button class="rate-type-btn${
+          rateType === "N" ? " active" : ""
+        }" data-type="N">N</button>
+        <button class="rate-type-btn${
+          rateType === "O" ? " active" : ""
+        }" data-type="O">O</button>
+      </div>
+    </td>
+    <td class="factor-cell" id="factor-${index}">${initialFactor}</td>
+    <td class="effective-rate-cell" id="effective-rate-${index}">${formatCurrencyDisplay(
+              effectiveRate
+            )}</td>
+    <td><input type="number" class="hours-input" value="8" min="0" step="0.5" data-index="${index}" /></td>
+    <td class="total-cell" id="total-${index}">${formatCurrencyDisplay(
+              rowTotal
+            )}</td>
+  </tr>
+`;
           });
           equipmentTableBody.innerHTML = rows;
+          if (grandTotalDisplay) {
+            grandTotalDisplay.style.display = "block";
+          }
 
           // Add event listeners to toggle buttons
           document.querySelectorAll(".rate-type-btn").forEach((btn) => {
@@ -557,13 +717,82 @@
                   equipmentList[index],
                   newFactor
                 );
-                effectiveRateCell.textContent = `$${newEffectiveRate}`;
+                effectiveRateCell.textContent =
+                  formatCurrencyDisplay(newEffectiveRate);
+
+                const qtyInput = document.querySelector(
+                  `.qty-input[data-index="${index}"]`
+                );
+                const qty = parseFloat(qtyInput.value) || 0;
+                const hoursInput = document.querySelector(
+                  `.hours-input[data-index="${index}"]`
+                );
+                const hours = parseFloat(hoursInput.value) || 0;
+                const totalCell = document.getElementById(`total-${index}`);
+                const updatedTotal = calculateTotal(
+                  qty,
+                  newEffectiveRate,
+                  hours
+                );
+                totalCell.textContent = formatCurrencyDisplay(updatedTotal);
+                updateGrandTotal();
               }
+            });
+          });
+
+          // Add event listeners for quantity inputs
+          document.querySelectorAll(".qty-input").forEach((input) => {
+            input.addEventListener("input", function () {
+              const index = this.dataset.index;
+              const qty = parseFloat(this.value) || 0;
+              const effectiveRateCell = document.getElementById(
+                `effective-rate-${index}`
+              );
+              const effectiveRate = effectiveRateCell.textContent.replace(
+                /[$,]/g,
+                ""
+              );
+              const hoursInput = document.querySelector(
+                `.hours-input[data-index="${index}"]`
+              );
+              const hours = parseFloat(hoursInput.value) || 0;
+
+              const totalCell = document.getElementById(`total-${index}`);
+              totalCell.textContent = formatCurrency(
+                calculateTotal(qty, effectiveRate, hours)
+              );
+              updateGrandTotal();
+            });
+          });
+
+          // Add event listeners for hours inputs
+          document.querySelectorAll(".hours-input").forEach((input) => {
+            input.addEventListener("input", function () {
+              const index = this.dataset.index;
+              const hours = parseFloat(this.value) || 0;
+              const effectiveRateCell = document.getElementById(
+                `effective-rate-${index}`
+              );
+              const effectiveRate = effectiveRateCell.textContent.replace(
+                /[$,]/g,
+                ""
+              );
+              const qtyInput = document.querySelector(
+                `.qty-input[data-index="${index}"]`
+              );
+              const qty = parseFloat(qtyInput.value) || 0;
+
+              const totalCell = document.getElementById(`total-${index}`);
+              totalCell.textContent = formatCurrencyDisplay(
+                calculateTotal(qty, effectiveRate, hours)
+              );
+              updateGrandTotal();
             });
           });
 
           clearListBtn.style.display = "inline-block";
           exportListBtn.style.display = "inline-block";
+          updateGrandTotal();
         }
       }
 
@@ -601,6 +830,22 @@
         }
 
         return (baseRate * factorValue).toFixed(2);
+      }
+
+      function calculateTotal(qty, effectiveRate, hours) {
+        if (effectiveRate === "N/A") {
+          return "N/A";
+        }
+
+        const rate = parseFloat(effectiveRate);
+        const quantity = parseFloat(qty) || 0;
+        const hoursValue = parseFloat(hours) || 0;
+
+        if (isNaN(rate)) {
+          return "N/A";
+        }
+
+        return (quantity * rate * hoursValue).toFixed(2);
       }
 
       function exportEquipmentList() {
@@ -1290,7 +1535,7 @@
             })
             .attr("text-anchor", "middle")
             .attr("alignment-baseline", "middle")
-            .attr("font-size", "0.55rem") /* Reduced to match other rings */
+            .attr("font-size", "0.9rem") /* Reduced to match other rings */
             .attr("font-weight", "bold")
             .attr("fill", "#1a1a1a")
             .attr("pointer-events", "none")
@@ -1311,7 +1556,7 @@
             })
             .attr("text-anchor", "middle")
             .attr("alignment-baseline", "middle")
-            .attr("font-size", "0.55rem") /* Reduced to match other rings */
+            .attr("font-size", "0.9rem") /* Reduced to match other rings */
             .attr("font-weight", "bold")
             .attr("fill", "#1a1a1a")
             .attr("pointer-events", "none")
@@ -1373,7 +1618,7 @@
               .attr("class", "model-label")
               .attr("text-anchor", "middle")
               .attr("alignment-baseline", "middle")
-              .attr("font-size", "0.55rem") /* Increased to match other rings */
+              .attr("font-size", "0.9rem") /* Increased to match other rings */
               .attr("font-weight", "600")
               .attr("fill", "#1a1a1a")
               .attr("pointer-events", "none")
@@ -1524,6 +1769,8 @@
                 const makeName = d.parent.data.name;
                 const className = d.parent.parent.data.name;
                 const modelKey = `${className}|${makeName}|${modelName}`;
+                const makeKey = `${className}|${makeName}`;
+
                 const modelData = modelDataMap.get(modelKey) || {
                   model_desc: "No description available",
                   expire_date: "N/A",
@@ -1532,11 +1779,18 @@
                   overtime: "N/A",
                 };
 
+                const classDesc =
+                  classDescMap.get(className) || "No description available";
+                const makeDesc =
+                  makeDescMap.get(makeKey) || "No description available";
+
                 tooltip
                   .html(
                     `
       <div class="tooltip-title" style="text-align: center;">${modelName}</div>
-      <div class="tooltip-description" style="text-align: center;">${modelData.model_desc}</div>
+      <div class="tooltip-description" style="text-align: center; margin-bottom: 8px;">${
+        modelData.model_desc
+      }</div>
       <table class="tooltip-table">
         <tr>
           <td>Expire Date:</td>
@@ -1544,7 +1798,7 @@
         </tr>
         <tr>
           <td>Rental Rate:</td>
-          <td>$${modelData.rental_rate}</td>
+          <td>${formatCurrencyDisplay(modelData.rental_rate)}</td>
         </tr>
         <tr>
           <td>Delay:</td>
@@ -1555,6 +1809,12 @@
           <td>${modelData.overtime}</td>
         </tr>
       </table>
+      <div style="border-top: 1.5px solid var(--primary-yellow); margin-top: 8px; padding-top: 8px;">
+        <div class="tooltip-description" style="font-size: 0.65rem; color: #555; margin-bottom: 2px;">Class: ${className}</div>
+        <div class="tooltip-description" style="font-style: italic; font-size: 0.65rem; color: #555; margin-bottom: 12px;">${classDesc}</div>
+        <div class="tooltip-description" style="font-size: 0.65rem; color: #555; margin-bottom: 2px;">Make: ${makeName}</div>
+        <div class="tooltip-description" style="font-style: italic; font-size: 0.65rem; color: #555;">${makeDesc}</div>
+      </div>
     `
                   )
                   .style("opacity", 1);
