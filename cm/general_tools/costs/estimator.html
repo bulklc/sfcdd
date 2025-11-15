@@ -41,22 +41,43 @@
         height: var(--navbar-height);
       }
 
-      main.container {
+      main.container-fluid {
         position: fixed;
         top: var(--navbar-height);
         left: 0;
         right: 0;
         bottom: 0;
         height: calc(100vh - var(--navbar-height));
-        overflow-y: auto;
-        padding: 2rem;
+        overflow: hidden;
+        padding: 0;
         max-width: 100%;
         box-sizing: border-box;
+        display: flex;
+      }
+
+      .left-section {
+        width: 40%;
+        height: 100%;
+        overflow: hidden;
+        padding: 1rem; /* Reduced from 1rem */
+        box-sizing: border-box;
+        border-right: 2px solid #dee2e6;
+      }
+
+      .right-section {
+        width: 60%;
+        height: 100%;
+        overflow-y: auto;
+        padding: 2rem;
+        box-sizing: border-box;
+        background-color: #f8f9fa;
+        display: flex;
+        flex-direction: column;
       }
 
       #sunburst {
         width: 100%;
-        height: calc(100vh - var(--navbar-height) - 4rem);
+        height: 100%;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -65,11 +86,281 @@
       .sunburst-arc {
         cursor: pointer;
         stroke: #fff;
-        stroke-width: 2;
+        stroke-width: 1.5; /* Reduced from 2 */
       }
 
       .sunburst-arc:hover {
         opacity: 0.8;
+      }
+
+      .tooltip {
+        position: absolute;
+        padding: 8px 10px;
+        background: rgba(255, 255, 255, 0.95);
+        border: 2px solid var(--primary-blue);
+        border-radius: 6px;
+        pointer-events: none;
+        font-size: 0.75rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        z-index: 1000;
+        opacity: 0;
+        transition: opacity 0.2s;
+        max-width: 280px;
+        width: max-content;
+        min-width: 160px;
+      }
+
+      .tooltip-title {
+        font-weight: 700;
+        color: var(--primary-blue);
+        font-size: 0.85rem;
+        margin-bottom: 4px;
+        border-bottom: 1.5px solid var(--primary-yellow);
+        padding-bottom: 3px;
+      }
+
+      .tooltip-description {
+        color: #333;
+        margin: 4px 0;
+        line-height: 1.3;
+        font-size: 0.7rem;
+      }
+
+      .tooltip-stats {
+        display: flex;
+        gap: 10px;
+        margin-top: 4px;
+        padding-top: 4px;
+        border-top: 1px solid #e0e0e0;
+      }
+
+      .tooltip-stat {
+        display: flex;
+        align-items: center;
+        gap: 3px;
+      }
+
+      .tooltip-stat-label {
+        font-weight: 600;
+        color: var(--primary-blue);
+        font-size: 0.7rem;
+      }
+
+      .tooltip-stat-value {
+        color: #666;
+        font-size: 0.7rem;
+      }
+
+      .tooltip-table {
+        width: 100%;
+        margin-top: 4px;
+        border-collapse: collapse;
+        table-layout: auto;
+      }
+
+      .tooltip-table tr {
+        border-bottom: 1px solid #e0e0e0;
+      }
+
+      .tooltip-table tr:last-child {
+        border-bottom: none;
+      }
+
+      .tooltip-table td {
+        padding: 4px 6px;
+        font-size: 0.7rem;
+      }
+
+      .tooltip-table td:first-child {
+        font-weight: 600;
+        color: var(--primary-blue);
+        text-align: left;
+        width: auto;
+        white-space: nowrap;
+        padding-right: 8px;
+      }
+
+      .tooltip-table td:last-child {
+        color: #666;
+        text-align: right;
+        width: auto;
+      }
+
+      .equipment-list-title {
+        color: var(--primary-blue);
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+      }
+
+      .equipment-table-container {
+        flex: 1;
+        overflow-y: auto;
+        background-color: white;
+        border-radius: 0.375rem;
+        border: 1px solid #dee2e6;
+      }
+
+      .equipment-table {
+        width: 100%;
+        margin-bottom: 0;
+        font-size: 0.75rem; /* Reduced font size */
+      }
+
+      .equipment-table thead {
+        position: sticky;
+        top: 0;
+        background-color: var(--primary-blue);
+        color: white;
+        z-index: 10;
+      }
+
+      .equipment-table th {
+        padding: 0.5rem 0.25rem; /* Reduced padding */
+        font-weight: 600;
+        font-size: 0.7rem; /* Reduced font size */
+        border-bottom: 2px solid var(--primary-yellow);
+        white-space: nowrap;
+        text-align: center; /* Center-align column headers */
+      }
+
+      .equipment-table tbody tr {
+        border-bottom: 1px solid #dee2e6;
+        transition: background-color 0.2s;
+        text-align: center;
+      }
+
+      .equipment-table tbody tr:hover {
+        background-color: var(--faded-yellow);
+      }
+
+      .equipment-table tbody tr:last-child {
+        border-bottom: none;
+      }
+
+      .equipment-table td {
+        padding: 0.5rem 0.25rem; /* Reduced padding */
+        font-size: 0.7rem; /* Reduced font size */
+        vertical-align: middle;
+      }
+
+      .equipment-table .model-cell {
+        font-weight: 600;
+        color: var(--primary-blue);
+      }
+
+      .equipment-table .action-cell {
+        text-align: center;
+      }
+
+      .equipment-table .qty-input {
+        width: 50px;
+        padding: 0.25rem;
+        border: 1px solid #dee2e6;
+        border-radius: 0.25rem;
+        font-size: 0.7rem;
+      }
+
+      /* Toggle switch styles */
+      .rate-type-toggle {
+        display: inline-flex;
+        border: 1px solid #dee2e6;
+        border-radius: 0.25rem;
+        overflow: hidden;
+        background-color: white;
+      }
+
+      .rate-type-btn {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.65rem;
+        background-color: white;
+        color: #6c757d;
+        border: none;
+        border-right: 1px solid #dee2e6;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-weight: 500;
+      }
+
+      .rate-type-btn:last-child {
+        border-right: none;
+      }
+
+      .rate-type-btn:hover {
+        background-color: #f8f9fa;
+      }
+
+      .rate-type-btn.active {
+        background-color: var(--primary-blue);
+        color: white;
+        font-weight: 600;
+      }
+
+      .btn-remove {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.65rem; /* Reduced font size */
+        background-color: #dc3545;
+        color: white;
+        border: none;
+        border-radius: 0.25rem;
+        cursor: pointer;
+        transition: background-color 0.2s;
+      }
+
+      .btn-remove:hover {
+        background-color: #bb2d3b;
+      }
+
+      .empty-state {
+        text-align: center;
+        padding: 3rem 2rem;
+        color: #6c757d;
+      }
+
+      .empty-state-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+      }
+
+      .empty-state-text {
+        font-size: 1rem;
+        line-height: 1.6;
+      }
+
+      .table-actions {
+        margin-top: 1rem;
+        display: flex;
+        gap: 0.5rem;
+        justify-content: flex-end;
+      }
+
+      .btn-action {
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+        border-radius: 0.25rem;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-weight: 500;
+      }
+
+      .btn-clear {
+        background-color: #6c757d;
+        color: white;
+      }
+
+      .btn-clear:hover {
+        background-color: #5a6268;
+      }
+
+      .btn-export {
+        background-color: var(--primary-green);
+        color: white;
+      }
+
+      .btn-export:hover {
+        background-color: #7ab330;
       }
     </style>
   </head>
@@ -77,8 +368,63 @@
     <!-- Navigation bar container -->
     <nav id="navbar"></nav>
 
-    <main class="container">
-      <div id="sunburst"></div>
+    <main class="container-fluid">
+      <div class="left-section">
+        <div id="sunburst"></div>
+      </div>
+      <div class="right-section">
+        <div class="equipment-table-container">
+          <table class="equipment-table table" id="equipmentTable">
+            <thead>
+              <tr>
+                <th>QTY</th>
+                <th>Class</th>
+                <th>Make</th>
+                <th>Model</th>
+                <th>Base Rate</th>
+                <th>Rate Type</th>
+                <th>Factor</th>
+                <th>Effective Rate</th>
+                <th>Hours</th>
+                <th>Total</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="equipmentTableBody">
+              <tr>
+                <td colspan="11">
+                  <div class="empty-state">
+                    <div class="empty-state-icon">📋</div>
+                    <div class="empty-state-text">
+                      <p><strong>No equipment selected yet</strong></p>
+                      <p>
+                        Double-click on equipment models in the chart to add
+                        them to your list
+                      </p>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="table-actions">
+          <button
+            class="btn-action btn-clear"
+            id="clearListBtn"
+            style="display: none"
+          >
+            Clear List
+          </button>
+          <button
+            class="btn-action btn-export"
+            id="exportListBtn"
+            style="display: none"
+          >
+            Export List
+          </button>
+        </div>
+      </div>
     </main>
 
     <!-- Bootstrap JS Bundle -->
@@ -91,6 +437,224 @@
         loadNavbar("Cost Estimator")
       );
 
+      // Equipment list management
+      const equipmentList = [];
+      const equipmentTableBody = document.getElementById("equipmentTableBody");
+      const clearListBtn = document.getElementById("clearListBtn");
+      const exportListBtn = document.getElementById("exportListBtn");
+
+      function addEquipmentToList(equipment) {
+        // Check if already in list
+        const exists = equipmentList.some(
+          (item) =>
+            item.model === equipment.model &&
+            item.make === equipment.make &&
+            item.class === equipment.class
+        );
+
+        if (exists) {
+          return; // Don't add duplicates
+        }
+
+        equipmentList.push(equipment);
+        updateEquipmentTable();
+      }
+
+      function removeEquipmentFromList(index) {
+        equipmentList.splice(index, 1);
+        updateEquipmentTable();
+      }
+
+      function clearEquipmentList() {
+        equipmentList.length = 0;
+        updateEquipmentTable();
+      }
+
+      function updateEquipmentTable() {
+        if (equipmentList.length === 0) {
+          equipmentTableBody.innerHTML = `
+            <tr>
+              <td colspan="11">
+                <div class="empty-state">
+                  <div class="empty-state-icon">📋</div>
+                  <div class="empty-state-text">
+                    <p><strong>No equipment selected yet</strong></p>
+                    <p>Double-click on equipment models in the chart to add them to your list</p>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          `;
+          clearListBtn.style.display = "none";
+          exportListBtn.style.display = "none";
+        } else {
+          let rows = "";
+          equipmentList.forEach((item, index) => {
+            // Calculate initial factor based on rate type (default "N")
+            const initialFactor = calculateFactor(item, item.rate_type || "N");
+            const effectiveRate = calculateEffectiveRate(item, initialFactor);
+
+            rows += `
+              <tr>
+                <td><input type="number" class="qty-input" value="1" min="1" /></td>
+                <td>${item.class}</td>
+                <td>${item.make}</td>
+                <td class="model-cell">${item.model}</td>
+                <td>$${item.rental_rate}</td>
+                <td>
+                  <div class="rate-type-toggle" data-index="${index}">
+                    <button class="rate-type-btn" data-type="D">D</button>
+                    <button class="rate-type-btn active" data-type="N">N</button>
+                    <button class="rate-type-btn" data-type="O">O</button>
+                  </div>
+                </td>
+                <td class="factor-cell" id="factor-${index}">${initialFactor}</td>
+                <td class="effective-rate-cell" id="effective-rate-${index}">$${effectiveRate}</td>
+                <td></td>
+                <td></td>
+                <td class="action-cell">
+                  <button class="btn-remove" onclick="removeEquipmentFromList(${index})">
+                    Remove
+                  </button>
+                </td>
+              </tr>
+            `;
+          });
+          equipmentTableBody.innerHTML = rows;
+
+          // Add event listeners to toggle buttons
+          document.querySelectorAll(".rate-type-btn").forEach((btn) => {
+            btn.addEventListener("click", function (e) {
+              e.preventDefault();
+              const toggle = this.parentElement;
+              const buttons = toggle.querySelectorAll(".rate-type-btn");
+
+              // Remove active class from all buttons in this toggle
+              buttons.forEach((b) => b.classList.remove("active"));
+
+              // Add active class to clicked button
+              this.classList.add("active");
+
+              // Store the selected rate type and update factor
+              const index = toggle.dataset.index;
+              const rateType = this.dataset.type;
+              if (equipmentList[index]) {
+                equipmentList[index].rate_type = rateType;
+
+                // Update the factor cell
+                const factorCell = document.getElementById(`factor-${index}`);
+                const newFactor = calculateFactor(
+                  equipmentList[index],
+                  rateType
+                );
+                factorCell.textContent = newFactor;
+
+                // Update the effective rate cell
+                const effectiveRateCell = document.getElementById(
+                  `effective-rate-${index}`
+                );
+                const newEffectiveRate = calculateEffectiveRate(
+                  equipmentList[index],
+                  newFactor
+                );
+                effectiveRateCell.textContent = `$${newEffectiveRate}`;
+              }
+            });
+          });
+
+          clearListBtn.style.display = "inline-block";
+          exportListBtn.style.display = "inline-block";
+        }
+      }
+
+      function calculateFactor(item, rateType) {
+        if (rateType === "D") {
+          // Delay: use Rw_Delay value
+          return item.rw_delay !== "N/A" ? item.rw_delay : "N/A";
+        } else if (rateType === "N") {
+          // Normal: factor is 1
+          return "1";
+        } else if (rateType === "O") {
+          // Overtime: 1 + overtime value
+          if (item.overtime !== "N/A") {
+            const overtimeValue = parseFloat(item.overtime);
+            if (!isNaN(overtimeValue)) {
+              return (1 + overtimeValue).toFixed(2);
+            }
+          }
+          return "N/A";
+        }
+        return "1"; // Default
+      }
+
+      function calculateEffectiveRate(item, factor) {
+        // Base Rate × Rate Factor
+        if (item.rental_rate === "N/A" || factor === "N/A") {
+          return "N/A";
+        }
+
+        const baseRate = parseFloat(item.rental_rate);
+        const factorValue = parseFloat(factor);
+
+        if (isNaN(baseRate) || isNaN(factorValue)) {
+          return "N/A";
+        }
+
+        return (baseRate * factorValue).toFixed(2);
+      }
+
+      function exportEquipmentList() {
+        // Create CSV content
+        const headers = [
+          "QTY",
+          "Class",
+          "Make",
+          "Model",
+          "Rental Base Rate",
+          "Rate Type",
+          "Rate Coefficient",
+          "Effective Rate",
+          "Hours",
+          "Total",
+        ];
+        const csvContent =
+          headers.join(",") +
+          "\n" +
+          equipmentList
+            .map((item) => {
+              const factor = calculateFactor(item, item.rate_type || "N");
+              const effectiveRate = calculateEffectiveRate(item, factor);
+              return [
+                "1",
+                `"${item.class}"`,
+                `"${item.make}"`,
+                `"${item.model}"`,
+                item.rental_rate,
+                item.rate_type || "N",
+                factor,
+                effectiveRate,
+                "",
+                "",
+              ].join(",");
+            })
+            .join("\n");
+
+        // Create download link
+        const blob = new Blob([csvContent], { type: "text/csv" });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "equipment_list.csv";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+      }
+
+      // Event listeners
+      clearListBtn.addEventListener("click", clearEquipmentList);
+      exportListBtn.addEventListener("click", exportEquipmentList);
+
       // Load data and create sunburst chart
       async function loadSunburstChart() {
         try {
@@ -99,24 +663,80 @@
           );
           const data = await response.json();
 
-          // Group data by Class
+          // Group data by Class, then Make, then Model
           const classGroups = d3.group(data, (d) => d.Class);
 
-          // Create hierarchy data structure with equal values for equal segments
+          // Create hierarchy data structure with three levels
           const hierarchyData = {
             name: "root",
-            children: Array.from(classGroups, ([className, items]) => ({
-              name: className,
-              value: 1,
-              children: [],
-            })),
+            children: Array.from(classGroups, ([className, classItems]) => {
+              const makeGroups = d3.group(classItems, (d) => d.Make);
+
+              return {
+                name: className,
+                children: Array.from(makeGroups, ([makeName, makeItems]) => {
+                  const modelGroups = d3.group(makeItems, (d) => d.Model);
+
+                  return {
+                    name: makeName,
+                    children: Array.from(
+                      modelGroups,
+                      ([modelName, modelItems]) => ({
+                        name: modelName,
+                        value: 1, // Each model has equal weight
+                      })
+                    ),
+                  };
+                }),
+              };
+            }),
           };
+
+          // After loading the data, create maps for class, make, and model descriptions
+          const classDescMap = new Map();
+          const makeDescMap = new Map();
+          const modelDataMap = new Map();
+
+          data.forEach((item) => {
+            if (
+              item.Class &&
+              item.Class_Desc &&
+              !classDescMap.has(item.Class)
+            ) {
+              classDescMap.set(item.Class, item.Class_Desc);
+            }
+
+            // Create a unique key combining Class and Make
+            if (item.Class && item.Make && item.Make_Desc) {
+              const makeKey = `${item.Class}|${item.Make}`;
+              if (!makeDescMap.has(makeKey)) {
+                makeDescMap.set(makeKey, item.Make_Desc);
+              }
+            }
+
+            // Store complete model data with unique key
+            if (item.Class && item.Make && item.Model) {
+              const modelKey = `${item.Class}|${item.Make}|${item.Model}`;
+              if (!modelDataMap.has(modelKey)) {
+                modelDataMap.set(modelKey, {
+                  model_desc: item.Model_Desc || "No description available",
+                  expire_date: item.Expire_Date || "N/A",
+                  rental_rate: item.Rental_Rate || "N/A",
+                  rw_delay: item.Rw_Delay || "N/A",
+                  overtime: item.Overtime || "N/A",
+                });
+              }
+            }
+          });
 
           // Set up dimensions
           const container = document.getElementById("sunburst");
-          const width = Math.min(container.clientWidth, container.clientHeight);
-          const height = width;
-          const radius = width / 2;
+          const width =
+            container.clientWidth; /* Use full width instead of Math.min */
+          const height = container.clientHeight; /* Use full height */
+          const radius =
+            Math.min(width, height) /
+            2; /* Use the smaller dimension for radius */
 
           // Create SVG
           const svg = d3
@@ -153,6 +773,59 @@
 
           partition(root);
 
+          // IMPORTANT: Manually set equal angular size for all Class segments
+          const totalClasses = hierarchyData.children.length;
+          const classSize = (2 * Math.PI) / totalClasses;
+
+          root.children.forEach((classNode, index) => {
+            const classStart = index * classSize;
+            const classEnd = (index + 1) * classSize;
+
+            // Set Class angles
+            classNode.x0 = classStart;
+            classNode.x1 = classEnd;
+
+            // Calculate total number of models in this Class
+            const totalModelsInClass = classNode.children.reduce(
+              (sum, makeNode) =>
+                sum + (makeNode.children ? makeNode.children.length : 0),
+              0
+            );
+
+            // Distribute Makes proportionally based on number of models
+            if (classNode.children && totalModelsInClass > 0) {
+              let currentAngle = classStart;
+
+              classNode.children.forEach((makeNode, makeIndex) => {
+                const numModels = makeNode.children
+                  ? makeNode.children.length
+                  : 0;
+                const makeProportion = numModels / totalModelsInClass;
+                const makeAngularSize =
+                  (classEnd - classStart) * makeProportion;
+
+                const makeStart = currentAngle;
+                const makeEnd = currentAngle + makeAngularSize;
+
+                makeNode.x0 = makeStart;
+                makeNode.x1 = makeEnd;
+
+                // Distribute Models evenly within this Make segment
+                if (makeNode.children) {
+                  const modelSize = makeAngularSize / makeNode.children.length;
+                  makeNode.children.forEach((modelNode, modelIndex) => {
+                    const modelStart = makeStart + modelIndex * modelSize;
+                    const modelEnd = modelStart + modelSize;
+                    modelNode.x0 = modelStart;
+                    modelNode.x1 = modelEnd;
+                  });
+                }
+
+                currentAngle = makeEnd;
+              });
+            }
+          });
+
           // Create custom color scale with more pleasing, harmonious colors
           const baseColors = [
             "#017dc3", // primary blue
@@ -174,127 +847,89 @@
 
           const color = d3.scaleOrdinal(baseColors);
 
-          // Create arc generator
+          // Create arc generator with adjusted inner/outer radius for three levels
           const arc = d3
             .arc()
             .startAngle((d) => d.x0)
             .endAngle((d) => d.x1)
-            .innerRadius((d) => d.y0)
-            .outerRadius((d) => d.y1);
+            .innerRadius((d) => {
+              // Adjusted ring widths to use full radius
+              if (d.depth === 1) return radius * 0.33; // Class inner radius
+              if (d.depth === 2) return radius * 0.6; // Make inner radius
+              if (d.depth === 3) return radius * 0.8; // Model inner radius
+              return d.y0;
+            })
+            .outerRadius((d) => {
+              // Adjusted ring widths to use full radius
+              if (d.depth === 1) return radius * 0.6; // Class outer radius
+              if (d.depth === 2) return radius * 0.8; // Make outer radius
+              if (d.depth === 3) return radius * 1.0; // Model outer radius - full radius
+              return d.y1;
+            });
 
           // Track current state
           let selectedSegment = null; // Track the selected segment
+          let selectedMake = null; // Track the selected Make segment
           let isExpanded = false; // Track if a segment is expanded
+          const OPACITY_FADE_DURATION = 300;
+          const ARC_ANIMATION_DURATION = 500;
+          const MAKE_TARGET_SIZE = (240 * Math.PI) / 180; // 240 degrees for Make expansion
 
-          // Function to expand/shrink segments
-          function updateSegmentSizes(selectedData, expand = true) {
-            if (expand) {
-              const targetSize = (300 * Math.PI) / 180; // 300 degrees in radians
-              const remainingSize = 2 * Math.PI - targetSize; // Remaining space (60 degrees)
+          function applyAnglesToMake(makeNode, startAngle, endAngle) {
+            makeNode.x0 = startAngle;
+            makeNode.x1 = endAngle;
 
-              // Create a mapping of segment names to their original indices
-              const segmentOrder = {};
-              hierarchyData.children.forEach((child, index) => {
-                segmentOrder[child.name] = index;
-              });
+            if (makeNode.children && makeNode.children.length > 0) {
+              const modelCount = makeNode.children.length;
+              const modelSpan = (endAngle - startAngle) / modelCount;
+              let currentModelAngle = startAngle;
 
-              // Get the selected segment's original index
-              const selectedIndex = segmentOrder[selectedData.data.name];
-              const totalSegments = hierarchyData.children.length;
-
-              // Calculate segment size
-              const segmentSize = (2 * Math.PI) / totalSegments;
-
-              // Calculate the original angles
-              const originalStartAngle = selectedIndex * segmentSize;
-              const originalEndAngle = (selectedIndex + 1) * segmentSize;
-              const originalMidpoint =
-                (originalStartAngle + originalEndAngle) / 2;
-
-              // Calculate where the expanded segment should start to keep it centered
-              const expandedStartAngle = originalMidpoint - targetSize / 2;
-              const expandedEndAngle = originalMidpoint + targetSize / 2;
-
-              // Calculate the opposite side (180 degrees from the midpoint)
-              let oppositeMidpoint = originalMidpoint + Math.PI;
-              if (oppositeMidpoint >= 2 * Math.PI) {
-                oppositeMidpoint -= 2 * Math.PI;
-              }
-
-              // Center the remaining segments on the opposite side
-              let remainingStartAngle = oppositeMidpoint - remainingSize / 2;
-              if (remainingStartAngle < 0) {
-                remainingStartAngle += 2 * Math.PI;
-              }
-
-              // Create ordered list of segments in circular order starting after the selected segment
-              const otherSegments = [];
-              for (let i = 1; i < totalSegments; i++) {
-                const currentIndex = (selectedIndex + i) % totalSegments;
-                const segment = root
-                  .descendants()
-                  .find(
-                    (d) =>
-                      d.depth > 0 && segmentOrder[d.data.name] === currentIndex
-                  );
-                if (segment) {
-                  otherSegments.push(segment);
-                }
-              }
-
-              const otherSegmentSize = remainingSize / otherSegments.length;
-
-              // Update angles for the selected segment
-              selectedData.x0 = expandedStartAngle;
-              selectedData.x1 = expandedEndAngle;
-
-              // Place other segments in circular order on the opposite side
-              let currentAngle = remainingStartAngle;
-              otherSegments.forEach((d) => {
-                d.x0 = currentAngle;
-                d.x1 = currentAngle + otherSegmentSize;
-                currentAngle += otherSegmentSize;
-
-                // Wrap around if necessary
-                if (currentAngle >= 2 * Math.PI) {
-                  currentAngle -= 2 * Math.PI;
-                }
-              });
-            } else {
-              // Reset to equal sizes based on original order
-              const segmentSize = (2 * Math.PI) / hierarchyData.children.length;
-
-              // Create a mapping of segment names to their original indices
-              const segmentOrder = {};
-              hierarchyData.children.forEach((child, index) => {
-                segmentOrder[child.name] = index;
-              });
-
-              root.descendants().forEach((d) => {
-                if (d.depth > 0) {
-                  // Find the original index of this segment
-                  const originalIndex = segmentOrder[d.data.name];
-
-                  // Calculate angles based on original position
-                  d.x0 = originalIndex * segmentSize;
-                  d.x1 = (originalIndex + 1) * segmentSize;
-                }
+              makeNode.children.forEach((modelNode) => {
+                modelNode.x0 = currentModelAngle;
+                modelNode.x1 = currentModelAngle + modelSpan;
+                currentModelAngle += modelSpan;
               });
             }
+          }
 
-            // Animate the arc changes
+          function makeWeight(makeNode) {
+            if (!makeNode.children || makeNode.children.length === 0) {
+              return 1;
+            }
+            return makeNode.children.length;
+          }
+
+          function isDescendantOf(node, ancestor) {
+            if (!node || !ancestor) return false;
+            let current = node;
+            while (current && current !== ancestor) {
+              current = current.parent;
+            }
+            return current === ancestor;
+          }
+
+          function animateSunburstLayout() {
             svg
               .selectAll("path")
               .transition()
-              .duration(500)
+              .duration(ARC_ANIMATION_DURATION)
               .attrTween("d", function (d) {
                 const startX0 =
                   this._currentX0 !== undefined ? this._currentX0 : d.x0;
                 const startX1 =
                   this._currentX1 !== undefined ? this._currentX1 : d.x1;
 
-                const deltaX0 = shortestAngularDelta(startX0, d.x0);
-                const deltaX1 = shortestAngularDelta(startX1, d.x1);
+                const preserveDirectionalMotion =
+                  selectedSegment &&
+                  d.depth > 1 &&
+                  isDescendantOf(d, selectedSegment);
+
+                const deltaX0 = preserveDirectionalMotion
+                  ? d.x0 - startX0
+                  : shortestAngularDelta(startX0, d.x0);
+                const deltaX1 = preserveDirectionalMotion
+                  ? d.x1 - startX1
+                  : shortestAngularDelta(startX1, d.x1);
 
                 return function (t) {
                   const tempD = { ...d };
@@ -316,47 +951,338 @@
                 this._currentX1 = d.x1;
               });
 
-            // Update label positions
-            labels
+            classLabels
               .transition()
-              .duration(500)
+              .duration(ARC_ANIMATION_DURATION)
               .attr("transform", function (d) {
                 const [x, y] = arc.centroid(d);
                 let angle = (((d.x0 + d.x1) / 2) * 180) / Math.PI - 90;
-                // Flip labels between 6 o'clock and noon
                 if (angle < -90 || angle > 90) {
                   angle += 180;
                 }
                 return `translate(${x},${y}) rotate(${angle})`;
               });
+
+            makeLabels
+              .transition()
+              .duration(ARC_ANIMATION_DURATION)
+              .attr("transform", function (d) {
+                const [x, y] = arc.centroid(d);
+                let angle = (((d.x0 + d.x1) / 2) * 180) / Math.PI - 90;
+                if (angle < -90 || angle > 90) {
+                  angle += 180;
+                }
+                return `translate(${x},${y}) rotate(${angle})`;
+              });
+
+            if (!activeModelLabels.empty()) {
+              activeModelLabels
+                .transition()
+                .duration(ARC_ANIMATION_DURATION)
+                .attr("transform", computeModelLabelTransform);
+            }
           }
 
-          // Draw arcs
+          function updateMakeSegmentSizes(classNode, focusMake = null) {
+            if (
+              !classNode ||
+              !classNode.children ||
+              classNode.children.length === 0
+            ) {
+              return;
+            }
+
+            const classStart = classNode.x0;
+            const classEnd = classNode.x1;
+            const classSpan = classEnd - classStart;
+            const orderedMakes = classNode.children.slice();
+
+            if (!focusMake) {
+              const totalWeight = orderedMakes.reduce(
+                (sum, makeNode) => sum + makeWeight(makeNode),
+                0
+              );
+
+              let currentAngle = classStart;
+              orderedMakes.forEach((makeNode) => {
+                const weight = makeWeight(makeNode);
+                const proportion =
+                  totalWeight > 0
+                    ? weight / totalWeight
+                    : 1 / orderedMakes.length;
+                const makeSpan = classSpan * proportion;
+                applyAnglesToMake(
+                  makeNode,
+                  currentAngle,
+                  currentAngle + makeSpan
+                );
+                currentAngle += makeSpan;
+              });
+
+              animateSunburstLayout();
+              return;
+            }
+
+            const hasOtherMakes = orderedMakes.length > 1;
+            const targetSpan = hasOtherMakes
+              ? Math.min(MAKE_TARGET_SIZE, classSpan)
+              : classSpan;
+            const otherMakes = orderedMakes.filter(
+              (node) => node !== focusMake
+            );
+            const remainingSpan = hasOtherMakes
+              ? Math.max(classSpan - targetSpan, 0)
+              : 0;
+            const otherWeight = otherMakes.reduce(
+              (sum, node) => sum + makeWeight(node),
+              0
+            );
+
+            let currentAngle = classStart;
+            orderedMakes.forEach((makeNode) => {
+              let span;
+              if (makeNode === focusMake) {
+                span = hasOtherMakes ? targetSpan : classSpan;
+              } else if (remainingSpan === 0) {
+                span = 0;
+              } else if (otherWeight > 0) {
+                span = remainingSpan * (makeWeight(makeNode) / otherWeight);
+              } else {
+                span = remainingSpan / otherMakes.length;
+              }
+
+              applyAnglesToMake(makeNode, currentAngle, currentAngle + span);
+              currentAngle += span;
+            });
+
+            animateSunburstLayout();
+          }
+
+          // Function to expand/shrink segments
+          function updateSegmentSizes(selectedData, expand = true) {
+            if (expand) {
+              const targetSize = (270 * Math.PI) / 180;
+              const remainingSize = 2 * Math.PI - targetSize;
+
+              // Create a mapping of Class segment names to their original indices
+              const segmentOrder = {};
+              hierarchyData.children.forEach((child, index) => {
+                segmentOrder[child.name] = index;
+              });
+
+              // Find the root Class for the selected segment
+              let classSegment = selectedData;
+              while (classSegment.depth > 1) {
+                classSegment = classSegment.parent;
+              }
+
+              const selectedIndex = segmentOrder[classSegment.data.name];
+              const totalSegments = hierarchyData.children.length;
+
+              const segmentSize = (2 * Math.PI) / totalSegments;
+              const originalStartAngle = selectedIndex * segmentSize;
+              const originalEndAngle = (selectedIndex + 1) * segmentSize;
+              const originalMidpoint =
+                (originalStartAngle + originalEndAngle) / 2;
+
+              const expandedStartAngle = originalMidpoint - targetSize / 2;
+              const expandedEndAngle = originalMidpoint + targetSize / 2;
+
+              let oppositeMidpoint = originalMidpoint + Math.PI;
+              if (oppositeMidpoint >= 2 * Math.PI) {
+                oppositeMidpoint -= 2 * Math.PI;
+              }
+
+              let remainingStartAngle = oppositeMidpoint - remainingSize / 2;
+              if (remainingStartAngle < 0) {
+                remainingStartAngle += 2 * Math.PI;
+              }
+
+              const otherSegments = [];
+              for (let i = 1; i < totalSegments; i++) {
+                const currentIndex = (selectedIndex + i) % totalSegments;
+                const segment = root
+                  .descendants()
+                  .find(
+                    (d) =>
+                      d.depth === 1 &&
+                      segmentOrder[d.data.name] === currentIndex
+                  );
+                if (segment) {
+                  otherSegments.push(segment);
+                }
+              }
+
+              const otherSegmentSize = remainingSize / otherSegments.length;
+
+              // Update angles for the selected Class and all its children
+              function updateAnglesRecursive(node, startAngle, endAngle) {
+                node.x0 = startAngle;
+                node.x1 = endAngle;
+
+                if (node.children) {
+                  // Calculate total models for proportional distribution
+                  const totalModels = node.children.reduce(
+                    (sum, child) =>
+                      sum + (child.children ? child.children.length : 0),
+                    0
+                  );
+
+                  let currentAngle = startAngle;
+
+                  node.children.forEach((child, i) => {
+                    const numModels = child.children
+                      ? child.children.length
+                      : 0;
+                    const childProportion =
+                      totalModels > 0
+                        ? numModels / totalModels
+                        : 1 / node.children.length;
+                    const childAngularSize =
+                      (endAngle - startAngle) * childProportion;
+
+                    const childStart = currentAngle;
+                    const childEnd = currentAngle + childAngularSize;
+
+                    updateAnglesRecursive(child, childStart, childEnd);
+                    currentAngle = childEnd;
+                  });
+                }
+              }
+
+              updateAnglesRecursive(
+                classSegment,
+                expandedStartAngle,
+                expandedEndAngle
+              );
+
+              // Place other Class segments and their children
+              let currentAngle = remainingStartAngle;
+              otherSegments.forEach((d) => {
+                updateAnglesRecursive(
+                  d,
+                  currentAngle,
+                  currentAngle + otherSegmentSize
+                );
+                currentAngle += otherSegmentSize;
+
+                if (currentAngle >= 2 * Math.PI) {
+                  currentAngle -= 2 * Math.PI;
+                }
+              });
+            } else {
+              // Reset to equal sizes
+              const totalClasses = hierarchyData.children.length;
+              const classSize = (2 * Math.PI) / totalClasses;
+
+              const segmentOrder = {};
+              hierarchyData.children.forEach((child, index) => {
+                segmentOrder[child.name] = index;
+              });
+
+              function resetAnglesRecursive(node) {
+                if (node.depth === 0) {
+                  // Root node - reset all Class children
+                  node.children.forEach((classNode) => {
+                    const classIndex = segmentOrder[classNode.data.name];
+                    const classStart = classIndex * classSize;
+                    const classEnd = (classIndex + 1) * classSize;
+
+                    classNode.x0 = classStart;
+                    classNode.x1 = classEnd;
+
+                    // Calculate total models in this class
+                    const totalModels = classNode.children.reduce(
+                      (sum, makeNode) =>
+                        sum +
+                        (makeNode.children ? makeNode.children.length : 0),
+                      0
+                    );
+
+                    let currentAngle = classStart;
+                    classNode.children.forEach((makeNode) => {
+                      const numModels = makeNode.children
+                        ? makeNode.children.length
+                        : 0;
+                      const makeProportion =
+                        totalModels > 0
+                          ? numModels / totalModels
+                          : 1 / classNode.children.length;
+                      const makeAngularSize =
+                        (classEnd - classStart) * makeProportion;
+
+                      resetAnglesRecursive(
+                        makeNode,
+                        currentAngle,
+                        currentAngle + makeAngularSize
+                      );
+                      currentAngle += makeAngularSize;
+                    });
+                  });
+                } else {
+                  // Class, Make, or Model node
+                  const start = arguments[1];
+                  const end = arguments[2];
+                  node.x0 = start;
+                  node.x1 = end;
+
+                  if (node.children) {
+                    const childSize = (end - start) / node.children.length;
+                    node.children.forEach((child, i) => {
+                      const childStart = start + i * childSize;
+                      const childEnd = childStart + childSize;
+                      resetAnglesRecursive(child, childStart, childEnd);
+                    });
+                  }
+                }
+              }
+
+              resetAnglesRecursive(root);
+            }
+
+            // Animate the arc changes
+            animateSunburstLayout();
+          }
+
+          // Draw arcs - include all depths > 0 (Class, Make, Model)
           const arcs = svg
             .selectAll("path")
             .data(root.descendants().filter((d) => d.depth > 0))
             .join("path")
             .attr("class", "sunburst-arc")
             .attr("d", arc)
-            .style("fill", (d) => color(d.data.name))
-            .style("opacity", 0.85) // Set default opacity
+            .style("fill", (d) => {
+              // Color based on the root Class
+              let colorNode = d;
+              while (colorNode.depth > 1) {
+                colorNode = colorNode.parent;
+              }
+              return colorNode.data.name === "root"
+                ? "transparent"
+                : color(colorNode.data.name);
+            })
+            .style("opacity", (d) => {
+              // Initially hide Make (depth 2) and Model (depth 3) rings
+              if (d.depth === 1) return 0.85; // Class - visible
+              return 0; // Make and Model - hidden initially
+            })
+            .style("pointer-events", (d) => {
+              // Initially disable interactions for Make and Model rings
+              return d.depth === 1 ? "auto" : "none";
+            })
             .each(function (d) {
-              // Initialize current angles for smooth transitions
               this._currentX0 = d.x0;
               this._currentX1 = d.x1;
-            })
-            .append("title")
-            .text((d) => `${d.data.name}`);
+            });
 
-          // Add labels for each segment, angled along the arc and flipped if needed
-          const labels = svg
-            .selectAll("text")
-            .data(root.descendants().filter((d) => d.depth > 0))
+          const classLabels = svg
+            .selectAll("text.class-label")
+            .data(root.descendants().filter((d) => d.depth === 1))
             .join("text")
+            .attr("class", "class-label")
             .attr("transform", function (d) {
               const [x, y] = arc.centroid(d);
               let angle = (((d.x0 + d.x1) / 2) * 180) / Math.PI - 90;
-              // Flip labels between 6 o'clock and noon
               if (angle < -90 || angle > 90) {
                 angle += 180;
               }
@@ -364,74 +1290,625 @@
             })
             .attr("text-anchor", "middle")
             .attr("alignment-baseline", "middle")
-            .attr("font-size", "1rem")
+            .attr("font-size", "0.55rem") /* Reduced to match other rings */
             .attr("font-weight", "bold")
             .attr("fill", "#1a1a1a")
             .attr("pointer-events", "none")
             .text((d) => d.data.name);
 
-          // Add hover handlers to path elements
-          svg
-            .selectAll("path")
+          const makeLabels = svg
+            .selectAll("text.make-label")
+            .data(root.descendants().filter((d) => d.depth === 2))
+            .join("text")
+            .attr("class", "make-label")
+            .attr("transform", function (d) {
+              const [x, y] = arc.centroid(d);
+              let angle = (((d.x0 + d.x1) / 2) * 180) / Math.PI - 90;
+              if (angle < -90 || angle > 90) {
+                angle += 180;
+              }
+              return `translate(${x},${y}) rotate(${angle})`;
+            })
+            .attr("text-anchor", "middle")
+            .attr("alignment-baseline", "middle")
+            .attr("font-size", "0.55rem") /* Reduced to match other rings */
+            .attr("font-weight", "bold")
+            .attr("fill", "#1a1a1a")
+            .attr("pointer-events", "none")
+            .style("opacity", 0)
+            .text((d) => d.data.name);
+
+          const modelLabelsGroup = svg
+            .append("g")
+            .attr("class", "model-label-group");
+
+          let activeModelLabels =
+            modelLabelsGroup.selectAll("text.model-label");
+
+          const computeModelLabelTransform = (d) => {
+            const [x, y] = arc.centroid(d);
+            let angle = (((d.x0 + d.x1) / 2) * 180) / Math.PI - 90;
+            if (angle < -90 || angle > 90) {
+              angle += 180;
+            }
+            return `translate(${x},${y}) rotate(${angle})`;
+          };
+
+          function hideModelLabels() {
+            if (activeModelLabels.empty()) return;
+
+            activeModelLabels
+              .transition()
+              .duration(OPACITY_FADE_DURATION)
+              .style("opacity", 0)
+              .remove();
+
+            activeModelLabels = modelLabelsGroup.selectAll("text.model-label");
+          }
+
+          function showModelLabelsForMake(makeNode) {
+            if (
+              !makeNode ||
+              !makeNode.children ||
+              makeNode.children.length === 0
+            ) {
+              hideModelLabels();
+              return;
+            }
+
+            const joined = modelLabelsGroup
+              .selectAll("text.model-label")
+              .data(makeNode.children, (d) => d.data.name);
+
+            joined
+              .exit()
+              .transition()
+              .duration(OPACITY_FADE_DURATION)
+              .style("opacity", 0)
+              .remove();
+
+            const entered = joined
+              .enter()
+              .append("text")
+              .attr("class", "model-label")
+              .attr("text-anchor", "middle")
+              .attr("alignment-baseline", "middle")
+              .attr("font-size", "0.55rem") /* Increased to match other rings */
+              .attr("font-weight", "600")
+              .attr("fill", "#1a1a1a")
+              .attr("pointer-events", "none")
+              .attr("transform", computeModelLabelTransform)
+              .style("opacity", 0)
+              .text((d) => d.data.name);
+
+            activeModelLabels = entered
+              .merge(joined)
+              .attr("transform", computeModelLabelTransform);
+
+            activeModelLabels
+              .transition()
+              .duration(OPACITY_FADE_DURATION)
+              .style("opacity", 1);
+          }
+
+          // Create tooltip div
+          const tooltip = d3
+            .select("body")
+            .append("div")
+            .attr("class", "tooltip");
+
+          // Function to position tooltip within viewport
+          function positionTooltip(event, tooltipNode) {
+            const tooltipWidth = tooltipNode.offsetWidth;
+            const tooltipHeight = tooltipNode.offsetHeight;
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+            const scrollX = window.pageXOffset;
+            const scrollY = window.pageYOffset;
+
+            let left = event.pageX + 15;
+            let top = event.pageY - 15;
+
+            // Check if tooltip would overflow right edge
+            if (left + tooltipWidth > scrollX + viewportWidth) {
+              left = event.pageX - tooltipWidth - 15;
+            }
+
+            // Check if tooltip would overflow bottom edge
+            if (top + tooltipHeight > scrollY + viewportHeight) {
+              top = event.pageY - tooltipHeight + 15;
+            }
+
+            // Ensure tooltip doesn't go off left edge
+            if (left < scrollX) {
+              left = scrollX + 10;
+            }
+
+            // Ensure tooltip doesn't go off top edge
+            if (top < scrollY) {
+              top = scrollY + 10;
+            }
+
+            return { left, top };
+          }
+
+          // Add hover handlers for tooltips
+          arcs
             .on("mouseenter", function (event, d) {
-              // Only apply hover if no segment is selected
-              if (!selectedSegment) {
-                d3.select(this).style("opacity", 1);
+              if (d.depth === 1) {
+                // Class level - show styled tooltip
+                const className = d.data.name;
+                const classDesc =
+                  classDescMap.get(className) || "No description available";
+                const makeCount = d.children ? d.children.length : 0;
+                const modelCount = d.children
+                  ? d.children.reduce(
+                      (sum, make) =>
+                        sum + (make.children ? make.children.length : 0),
+                      0
+                    )
+                  : 0;
+
+                tooltip
+                  .html(
+                    `
+          <div class="tooltip-title">${className}</div>
+          <div class="tooltip-description">${classDesc}</div>
+          <div class="tooltip-stats">
+            <div class="tooltip-stat">
+              <span class="tooltip-stat-label">Makes:</span>
+              <span class="tooltip-stat-value">${makeCount}</span>
+            </div>
+            <div class="tooltip-stat">
+              <span class="tooltip-stat-label">Models:</span>
+              <span class="tooltip-stat-value">${modelCount}</span>
+            </div>
+          </div>
+        `
+                  )
+                  .style("opacity", 1);
+
+                const pos = positionTooltip(event, tooltip.node());
+                tooltip
+                  .style("left", pos.left + "px")
+                  .style("top", pos.top + "px");
+              } else if (d.depth === 2) {
+                // Make level - only show tooltip if this Make is active
+                // Check if a Make is selected and this is not it
+                if (selectedMake && d !== selectedMake) {
+                  return; // Don't show tooltip for inactive Makes
+                }
+
+                // Check if no Make is selected but a Class is selected
+                // In this case, check if this Make belongs to the selected Class
+                if (selectedSegment && !selectedMake) {
+                  let classNode = d;
+                  while (classNode.depth > 1) {
+                    classNode = classNode.parent;
+                  }
+                  if (classNode !== selectedSegment) {
+                    return; // Don't show tooltip for Makes outside selected Class
+                  }
+                }
+
+                // Make level - show styled tooltip with model count
+                const makeName = d.data.name;
+                const className = d.parent.data.name;
+                const makeKey = `${className}|${makeName}`;
+                const makeDesc =
+                  makeDescMap.get(makeKey) || "No description available";
+                const modelCount = d.children ? d.children.length : 0;
+
+                tooltip
+                  .html(
+                    `
+      <div class="tooltip-title">${makeName}</div>
+      <div class="tooltip-description">${makeDesc}</div>
+      <div class="tooltip-stats">
+        <div class="tooltip-stat">
+          <span class="tooltip-stat-label">Models:</span>
+          <span class="tooltip-stat-value">${modelCount}</span>
+        </div>
+      </div>
+    `
+                  )
+                  .style("opacity", 1);
+
+                const pos = positionTooltip(event, tooltip.node());
+                tooltip
+                  .style("left", pos.left + "px")
+                  .style("top", pos.top + "px");
+              } else {
+                // Model level - show styled tooltip with complete model info
+                const modelName = d.data.name;
+                const makeName = d.parent.data.name;
+                const className = d.parent.parent.data.name;
+                const modelKey = `${className}|${makeName}|${modelName}`;
+                const modelData = modelDataMap.get(modelKey) || {
+                  model_desc: "No description available",
+                  expire_date: "N/A",
+                  rental_rate: "N/A",
+                  rw_delay: "N/A",
+                  overtime: "N/A",
+                };
+
+                tooltip
+                  .html(
+                    `
+      <div class="tooltip-title" style="text-align: center;">${modelName}</div>
+      <div class="tooltip-description" style="text-align: center;">${modelData.model_desc}</div>
+      <table class="tooltip-table">
+        <tr>
+          <td>Expire Date:</td>
+          <td>${modelData.expire_date}</td>
+        </tr>
+        <tr>
+          <td>Rental Rate:</td>
+          <td>$${modelData.rental_rate}</td>
+        </tr>
+        <tr>
+          <td>Delay:</td>
+          <td>${modelData.rw_delay}</td>
+        </tr>
+        <tr>
+          <td>Overtime:</td>
+          <td>${modelData.overtime}</td>
+        </tr>
+      </table>
+    `
+                  )
+                  .style("opacity", 1);
+
+                const pos = positionTooltip(event, tooltip.node());
+                tooltip
+                  .style("left", pos.left + "px")
+                  .style("top", pos.top + "px");
+              }
+
+              // Hover opacity changes - darken on hover
+              if (!selectedSegment && d.depth === 1) {
+                d3.select(this).style("opacity", 1); // Darken from 0.85 to 1
+              } else if (selectedSegment && !selectedMake && d.depth === 2) {
+                let classNode = d;
+                while (classNode.depth > 1) {
+                  classNode = classNode.parent;
+                }
+                if (classNode === selectedSegment) {
+                  d3.select(this).style("opacity", 0.9);
+                }
+              } else if (selectedMake && d.depth === 2 && d === selectedMake) {
+                d3.select(this).style("opacity", 0.9);
+              } else if (selectedMake && d.depth === 3) {
+                // Model hover when Make is selected
+                if (d.parent === selectedMake) {
+                  d3.select(this).style("opacity", 0.75);
+                }
               }
             })
+            .on("mousemove", function (event) {
+              const pos = positionTooltip(event, tooltip.node());
+              tooltip
+                .style("left", pos.left + "px")
+                .style("top", pos.top + "px");
+            })
             .on("mouseleave", function (event, d) {
-              // Only reset hover if no segment is selected
-              if (!selectedSegment) {
+              tooltip.style("opacity", 0);
+
+              // Restore original opacity on hover leave
+              if (!selectedSegment && d.depth === 1) {
+                d3.select(this).style("opacity", 0.85); // Restore to 0.85
+              } else if (selectedSegment && !selectedMake && d.depth === 2) {
+                let classNode = d;
+                while (classNode.depth > 1) {
+                  classNode = classNode.parent;
+                }
+                if (classNode === selectedSegment) {
+                  d3.select(this).style("opacity", 0.7);
+                }
+              } else if (selectedMake && d.depth === 2 && d === selectedMake) {
                 d3.select(this).style("opacity", 0.85);
+              } else if (selectedMake && d.depth === 3) {
+                // Model hover leave when Make is selected
+                if (d.parent === selectedMake) {
+                  d3.select(this).style("opacity", 0.55);
+                }
               }
             });
 
-          // Add click handler after both arcs and labels are defined
+          // Add click handler - handle both Class and Make clicks
           svg.selectAll("path").on("click", (event, d) => {
-            console.log("Clicked:", d.data.name);
+            event.stopPropagation();
 
-            // Check if clicking the same segment again (deselect)
-            if (selectedSegment === d) {
-              // First, restore segment opacity
-              svg
-                .selectAll("path")
-                .transition()
-                .duration(300)
-                .style("opacity", 0.85); // Return to default opacity
+            if (d.depth === 1) {
+              hideModelLabels();
 
-              // Then expand segments back to normal
-              setTimeout(() => {
-                updateSegmentSizes(null, false);
-                isExpanded = false;
+              // Handle Class level clicks (depth 1)
+              if (selectedSegment === d) {
+                // Deselecting Class - reverse animations
+                selectedSegment = null;
+                selectedMake = null;
 
-                // Finally, restore labels after segments have resized
+                svg
+                  .selectAll("path")
+                  .transition()
+                  .duration(OPACITY_FADE_DURATION)
+                  .style("opacity", (segment) => {
+                    if (segment.depth === 1) return 0.85; // Show Class
+                    return 0; // Hide Make and Model
+                  })
+                  .style("pointer-events", (segment) => {
+                    return segment.depth === 1 ? "auto" : "none";
+                  });
+
+                makeLabels
+                  .transition()
+                  .duration(OPACITY_FADE_DURATION)
+                  .style("opacity", 0);
+
+                // Keep the selected Class label visible during deselection
+                classLabels
+                  .transition()
+                  .duration(OPACITY_FADE_DURATION)
+                  .style("opacity", (segment) => (segment === d ? 1 : 0));
+
                 setTimeout(() => {
-                  labels.transition().duration(300).style("opacity", 1);
-                }, 500); // Wait for segment resize to complete
-              }, 300); // Wait for opacity restoration
+                  updateSegmentSizes(null, false);
+                  isExpanded = false;
+                }, OPACITY_FADE_DURATION);
 
-              selectedSegment = null;
-            } else {
-              // Selecting a new segment
-              selectedSegment = d;
+                setTimeout(() => {
+                  // Show all Class labels after animation completes
+                  classLabels
+                    .transition()
+                    .duration(OPACITY_FADE_DURATION)
+                    .style("opacity", 1);
+                }, OPACITY_FADE_DURATION + ARC_ANIMATION_DURATION);
+              } else {
+                // Selecting a new Class
+                selectedSegment = d;
+                selectedMake = null;
 
-              // First, hide all labels and fade segments except the clicked one
-              labels
-                .transition()
-                .duration(300)
-                .style("opacity", (segment) => (segment === d ? 1 : 0));
+                classLabels
+                  .transition()
+                  .duration(300)
+                  .style("opacity", (segment) => (segment === d ? 1 : 0));
 
-              svg
-                .selectAll("path")
-                .transition()
-                .duration(300)
-                .style("opacity", (segment) => (segment === d ? 1 : 0.2));
+                svg
+                  .selectAll("path")
+                  .transition()
+                  .duration(300)
+                  .style("opacity", (segment) => {
+                    let classNode = segment;
+                    while (classNode.depth > 1) {
+                      classNode = classNode.parent;
+                    }
 
-              // Wait for labels to fade, then expand the selected segment
-              setTimeout(() => {
-                updateSegmentSizes(d, true);
-                isExpanded = true;
-              }, 300); // Wait for labels to disappear and segments to fade
+                    if (classNode === d) {
+                      if (segment.depth === 1) return 0.85; // Class
+                      if (segment.depth === 2) return 0.7; // Make - visible
+                      return 0; // Model - hidden initially
+                    }
+                    return segment.depth === 1 ? 0.2 : 0;
+                  })
+                  .style("pointer-events", (segment) => {
+                    let classNode = segment;
+                    while (classNode.depth > 1) {
+                      classNode = classNode.parent;
+                    }
+                    if (
+                      classNode === d &&
+                      (segment.depth === 1 || segment.depth === 2)
+                    ) {
+                      return "auto";
+                    }
+                    return "none";
+                  });
+
+                setTimeout(() => {
+                  updateSegmentSizes(d, true);
+                  isExpanded = true;
+
+                  setTimeout(() => {
+                    makeLabels
+                      .transition()
+                      .duration(300)
+                      .style("opacity", (segment) => {
+                        let classNode = segment;
+                        while (classNode.depth > 1) {
+                          classNode = classNode.parent;
+                        }
+                        return classNode === d ? 1 : 0;
+                      });
+                  }, 500);
+                }, 300);
+              }
+            }
+
+            // Handle Make level clicks (depth 2)
+            else if (d.depth === 2) {
+              // Ignore clicks on inactive Makes
+              if (selectedMake && d !== selectedMake) {
+                return; // Don't respond to clicks on faded Makes
+              }
+
+              // Ignore clicks on Makes outside the selected Class
+              if (selectedSegment) {
+                let classNode = d;
+                while (classNode.depth > 1) {
+                  classNode = classNode.parent;
+                }
+                if (classNode !== selectedSegment) {
+                  return; // Don't respond to clicks on Makes outside selected Class
+                }
+              }
+
+              if (selectedMake === d) {
+                selectedMake = null;
+                hideModelLabels();
+
+                svg
+                  .selectAll("path")
+                  .transition()
+                  .duration(OPACITY_FADE_DURATION)
+                  .style("fill", (segment) => {
+                    // Restore original colors
+                    let colorNode = segment;
+                    while (colorNode.depth > 1) {
+                      colorNode = colorNode.parent;
+                    }
+                    return color(colorNode.data.name);
+                  })
+                  .style("opacity", (segment) => {
+                    let classNode = segment;
+                    while (classNode.depth > 1) {
+                      classNode = classNode.parent;
+                    }
+
+                    if (classNode === selectedSegment) {
+                      if (segment.depth === 1) return 0.85; // Class
+                      if (segment.depth === 2) return 0.7; // Make
+                      return 0; // Model - hide
+                    }
+                    return segment.depth === 1 ? 0.2 : 0;
+                  })
+                  .style("pointer-events", (segment) => {
+                    let classNode = segment;
+                    while (classNode.depth > 1) {
+                      classNode = classNode.parent;
+                    }
+                    if (
+                      classNode === selectedSegment &&
+                      (segment.depth === 1 || segment.depth === 2)
+                    ) {
+                      return "auto";
+                    }
+                    return "none";
+                  });
+
+                setTimeout(() => {
+                  if (selectedSegment) {
+                    updateMakeSegmentSizes(selectedSegment, null);
+                  }
+
+                  // Wait for arc animation to complete before showing labels
+                  setTimeout(() => {
+                    makeLabels
+                      .transition()
+                      .duration(OPACITY_FADE_DURATION)
+                      .style("opacity", (segment) => {
+                        let classNode = segment;
+                        while (classNode.depth > 1) {
+                          classNode = classNode.parent;
+                        }
+                        return classNode === selectedSegment ? 1 : 0;
+                      });
+                  }, ARC_ANIMATION_DURATION);
+                }, OPACITY_FADE_DURATION);
+              } else {
+                // Selecting a Make - fade other Makes (depth 2) to grey
+                selectedMake = d;
+                hideModelLabels();
+
+                svg
+                  .selectAll("path")
+                  .transition()
+                  .duration(OPACITY_FADE_DURATION)
+                  .style("fill", (segment) => {
+                    let colorNode = segment;
+                    while (colorNode.depth > 1) {
+                      colorNode = colorNode.parent;
+                    }
+                    const baseColor = color(colorNode.data.name);
+
+                    // Keep Classes and Models in their original colors
+                    return baseColor;
+                  })
+                  .style("opacity", (segment) => {
+                    let classNode = segment;
+                    while (classNode.depth > 1) {
+                      classNode = classNode.parent;
+                    }
+
+                    if (classNode === selectedSegment) {
+                      if (segment.depth === 1) return 0.85; // Class
+                      if (segment.depth === 2) {
+                        return segment === d ? 0.85 : 0.2; // Fade unselected Makes to 0.2
+                      }
+                      if (segment.depth === 3) {
+                        // Show Models only for selected Make
+                        return segment.parent === d ? 0.55 : 0;
+                      }
+                    }
+                    return segment.depth === 1 ? 0.2 : 0;
+                  })
+                  .style("pointer-events", (segment) => {
+                    let classNode = segment;
+                    while (classNode.depth > 1) {
+                      classNode = classNode.parent;
+                    }
+                    if (classNode === selectedSegment && segment.depth <= 3) {
+                      return "auto";
+                    }
+                    return "none";
+                  });
+
+                // Hide labels for unselected Makes
+                makeLabels
+                  .transition()
+                  .duration(OPACITY_FADE_DURATION)
+                  .style("opacity", (segment) => {
+                    return segment === d ? 1 : 0;
+                  });
+
+                setTimeout(() => {
+                  if (selectedSegment) {
+                    updateMakeSegmentSizes(selectedSegment, selectedMake);
+                    setTimeout(() => {
+                      if (selectedMake) {
+                        showModelLabelsForMake(selectedMake);
+                      }
+                    }, ARC_ANIMATION_DURATION);
+                  }
+                }, OPACITY_FADE_DURATION);
+              }
+            }
+          });
+
+          // Add double-click handler for Model segments (depth 3)
+          svg.selectAll("path").on("dblclick", (event, d) => {
+            event.stopPropagation();
+
+            if (d.depth === 3) {
+              // Model level - add to equipment list
+              const modelName = d.data.name;
+              const makeName = d.parent.data.name;
+              const className = d.parent.parent.data.name;
+              const modelKey = `${className}|${makeName}|${modelName}`;
+              const modelData = modelDataMap.get(modelKey);
+
+              if (modelData) {
+                const equipment = {
+                  model: modelName,
+                  make: makeName,
+                  class: className,
+                  rental_rate: modelData.rental_rate || "N/A",
+                  rate_type: "N", // Default to Normal
+                  expire_date: modelData.expire_date || "N/A",
+                  rw_delay: modelData.rw_delay || "N/A",
+                  overtime: modelData.overtime || "N/A",
+                };
+
+                addEquipmentToList(equipment);
+
+                // Visual feedback - briefly highlight the segment
+                d3.select(event.currentTarget)
+                  .transition()
+                  .duration(200)
+                  .style("opacity", 1)
+                  .transition()
+                  .duration(200)
+                  .style("opacity", 0.55);
+              }
             }
           });
         } catch (error) {
