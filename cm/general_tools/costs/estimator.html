@@ -105,9 +105,14 @@
         z-index: 1000;
         opacity: 0;
         transition: opacity 0.2s;
-        max-width: 280px;
+        max-width: 420px;
         width: max-content;
         min-width: 160px;
+      }
+
+      .tooltip.has-photo {
+        width: 420px !important;
+        max-width: 420px;
       }
 
       .tooltip-title {
@@ -208,8 +213,44 @@
         table-layout: fixed !important;
       }
 
-      .equipment-table col.col-standard {
-        width: calc((100% - 12%) / 9);
+      .equipment-table col.col-qty {
+        width: 11%;
+      }
+
+      .equipment-table col.col-class {
+        width: 7%;
+      }
+
+      .equipment-table col.col-make {
+        width: 7%;
+      }
+
+      .equipment-table col.col-code {
+        width: 7%;
+      }
+
+      .equipment-table col.col-model {
+        width: 12%;
+      }
+
+      .equipment-table col.col-base-rate {
+        width: 9%;
+      }
+
+      .equipment-table col.col-rate-type {
+        width: 8%;
+      }
+
+      .equipment-table col.col-factor {
+        width: 7%;
+      }
+
+      .equipment-table col.col-effective-rate {
+        width: 9%;
+      }
+
+      .equipment-table col.col-hours {
+        width: 8%;
       }
 
       .equipment-table col.col-total {
@@ -230,7 +271,7 @@
         font-size: 0.7rem; /* Reduced font size */
         border-bottom: 2px solid var(--primary-yellow);
         white-space: nowrap;
-        text-align: center; /* Center-align column headers */
+        text-align: center !important; /* Force center alignment for all headers */
       }
 
       .equipment-table tbody tr {
@@ -254,10 +295,9 @@
       }
 
       /* Right-align dollar value columns */
-      .equipment-table td:nth-child(5),  /* Base Rate */
-      .equipment-table td:nth-child(8),  /* Effective Rate */
-      .equipment-table td:nth-child(10), /* Total */
-      .equipment-table td:nth-child(10)  /* Total */ {
+      .equipment-table td:nth-child(6),  /* Base Rate */
+      .equipment-table td:nth-child(9),  /* Effective Rate */
+      .equipment-table td:nth-child(11)  /* Total */ {
         text-align: right;
         padding-right: 0.75rem;
       }
@@ -273,9 +313,9 @@
         padding-left: 0.75rem;
       }
 
-      .equipment-table th:nth-child(5),  /* Base Rate header */
-      .equipment-table th:nth-child(8),  /* Effective Rate header */
-      .equipment-table th:nth-child(10)  /* Total header */ {
+      .equipment-table th:nth-child(6),  /* Base Rate header */
+      .equipment-table th:nth-child(9),  /* Effective Rate header */
+      .equipment-table th:nth-child(11)  /* Total header */ {
         text-align: right;
         padding-right: 0.75rem;
       }
@@ -467,7 +507,16 @@
         <div class="equipment-table-container">
           <table class="equipment-table table" id="equipmentTable">
             <colgroup>
-              <col class="col-standard" span="9" />
+              <col class="col-qty" />
+              <col class="col-class" />
+              <col class="col-make" />
+              <col class="col-code" />
+              <col class="col-model" />
+              <col class="col-base-rate" />
+              <col class="col-rate-type" />
+              <col class="col-factor" />
+              <col class="col-effective-rate" />
+              <col class="col-hours" />
               <col class="col-total" />
             </colgroup>
             <thead>
@@ -475,6 +524,7 @@
                 <th>QTY</th>
                 <th>Class</th>
                 <th>Make</th>
+                <th>Code</th>
                 <th>Model</th>
                 <th>Base Rate</th>
                 <th>Rate Type</th>
@@ -486,7 +536,7 @@
             </thead>
             <tbody id="equipmentTableBody">
               <tr>
-                <td colspan="10">
+                <td colspan="11">
                   <div class="empty-state">
                     <div class="empty-state-icon">📋</div>
                     <div class="empty-state-text">
@@ -613,7 +663,7 @@
         if (equipmentList.length === 0) {
           equipmentTableBody.innerHTML = `
             <tr>
-              <td colspan="10">
+              <td colspan="11">
                 <div class="empty-state">
                   <div class="empty-state-icon">📋</div>
                   <div class="empty-state-text">
@@ -638,6 +688,13 @@
             const effectiveRate = calculateEffectiveRate(item, initialFactor);
             const rowTotal = calculateTotal(1, effectiveRate, 8);
 
+            // Abbreviate model description - remove Make prefix
+            const modelDesc = item.model_desc || "";
+            const abbreviatedDesc = modelDesc
+              .replace(/\s+/g, " ") // Replace multiple spaces with single space
+              .trim()
+              .substring(0, 20); // Increased character limit slightly
+
             rows += `
   <tr>
     <td>
@@ -653,6 +710,7 @@
     <td>${item.class}</td>
     <td>${item.make}</td>
     <td class="model-cell">${item.model}</td>
+    <td>${abbreviatedDesc}</td>
     <td>${formatCurrencyDisplay(item.rental_rate)}</td>
     <td>
       <div class="rate-type-toggle" data-index="${index}">
@@ -759,7 +817,7 @@
               const hours = parseFloat(hoursInput.value) || 0;
 
               const totalCell = document.getElementById(`total-${index}`);
-              totalCell.textContent = formatCurrency(
+              totalCell.textContent = formatCurrencyDisplay(
                 calculateTotal(qty, effectiveRate, hours)
               );
               updateGrandTotal();
@@ -855,6 +913,7 @@
           "QTY",
           "Class",
           "Make",
+          "Code",
           "Model",
           "Rental Base Rate",
           "Rate Type",
@@ -904,10 +963,53 @@
       // Load data and create sunburst chart
       async function loadSunburstChart() {
         try {
-          const response = await fetch(
-            "cost_data/stnd_2025_04_01_to_2026_03_31.json"
-          );
-          const data = await response.json();
+          const [costResponse, photosResponse] = await Promise.all([
+            fetch("cost_data/stnd_2025_04_01_to_2026_03_31.json"),
+            fetch("../equipment_photos/equipment_photos.json"),
+          ]);
+
+          const data = await costResponse.json();
+          const photosData = await photosResponse.json();
+
+          // Create a map for equipment photos lookup
+          const photoMap = new Map();
+          const makePhotoMap = new Map(); // Map for Make-level photos
+          const classPhotoMap = new Map(); // NEW: Map for Class-level photos
+          photosData.classes.forEach((classItem) => {
+            classItem.makes.forEach((makeItem) => {
+              makeItem.models.forEach((model) => {
+                // Check if model has * or ** marker
+                const hasDoubleMarker = model.endsWith("**");
+                const hasSingleMarker = model.endsWith("*") && !hasDoubleMarker;
+                const cleanModel = model.replace(/\*+$/, ""); // Remove trailing asterisks
+
+                const key = `${classItem.class}|${makeItem.make}|${cleanModel}`;
+                const makeKey = `${classItem.class}|${makeItem.make}`;
+                const classKey = classItem.class;
+
+                photoMap.set(
+                  key,
+                  `${classItem.class}_${makeItem.make}_${cleanModel}.jpg`
+                );
+
+                // If model has single *, add to Make photo map
+                if (hasSingleMarker || hasDoubleMarker) {
+                  makePhotoMap.set(
+                    makeKey,
+                    `${classItem.class}_${makeItem.make}_${cleanModel}.jpg`
+                  );
+                }
+
+                // If model has **, also add to Class photo map
+                if (hasDoubleMarker) {
+                  classPhotoMap.set(
+                    classKey,
+                    `${classItem.class}_${makeItem.make}_${cleanModel}.jpg`
+                  );
+                }
+              });
+            });
+          });
 
           // Group data by Class, then Make, then Model
           const classGroups = d3.group(data, (d) => d.Class);
@@ -1695,11 +1797,27 @@
                     )
                   : 0;
 
+                // Get representative photo for Class if available
+                const classPhotoFilename = classPhotoMap.get(className);
+                const classPhotoHTML = classPhotoFilename
+                  ? `<div style="text-align: center; margin-top: 8px;">
+                       <img src="../equipment_photos/${classPhotoFilename}" 
+                            alt="${className}" 
+                            style="max-width: 100%; max-height: 250px; border-radius: 4px; border: 1px solid #dee2e6;" 
+                            onerror="this.style.display='none'">
+                     </div>`
+                  : "";
+
                 tooltip
+                  .attr(
+                    "class",
+                    classPhotoFilename ? "tooltip has-photo" : "tooltip"
+                  )
                   .html(
                     `
           <div class="tooltip-title">${className}</div>
           <div class="tooltip-description">${classDesc}</div>
+          ${classPhotoHTML}
           <div class="tooltip-stats">
             <div class="tooltip-stat">
               <span class="tooltip-stat-label">Makes:</span>
@@ -1745,14 +1863,30 @@
                   makeDescMap.get(makeKey) || "No description available";
                 const modelCount = d.children ? d.children.length : 0;
 
+                // Get representative photo for Make if available
+                const makePhotoFilename = makePhotoMap.get(makeKey);
+                const makePhotoHTML = makePhotoFilename
+                  ? `<div style="text-align: center; margin-top: 8px;">
+                       <img src="../equipment_photos/${makePhotoFilename}" 
+                            alt="${makeName}" 
+                            style="max-width: 100%; max-height: 250px; border-radius: 4px; border: 1px solid #dee2e6;" 
+                            onerror="this.style.display='none'">
+                     </div>`
+                  : "";
+
                 tooltip
+                  .attr(
+                    "class",
+                    makePhotoFilename ? "tooltip has-photo" : "tooltip"
+                  )
                   .html(
                     `
       <div class="tooltip-title">${makeName}</div>
       <div class="tooltip-description">${makeDesc}</div>
+      ${makePhotoHTML}
       <div class="tooltip-stats">
         <div class="tooltip-stat">
-          <span class="tooltip-stat-label">Models:</span>
+          <span class="tooltip-stat-label">${className} Models:</span>
           <span class="tooltip-stat-value">${modelCount}</span>
         </div>
       </div>
@@ -1785,38 +1919,54 @@
                 const makeDesc =
                   makeDescMap.get(makeKey) || "No description available";
 
+                // Get equipment photo if available
+                const photoFilename = photoMap.get(modelKey);
+                const photoHTML = photoFilename
+                  ? `<div style="text-align: center; margin-top: 8px;">
+                       <img src="../equipment_photos/${photoFilename}" 
+                            alt="${modelName}" 
+                            style="max-width: 100%; max-height: 250px; border-radius: 4px; border: 1px solid #dee2e6;" 
+                            onerror="this.style.display='none'">  
+                     </div>`
+                  : "";
+
                 tooltip
+                  .attr(
+                    "class",
+                    photoFilename ? "tooltip has-photo" : "tooltip"
+                  )
                   .html(
                     `
-      <div class="tooltip-title" style="text-align: center;">${modelName}</div>
-      <div class="tooltip-description" style="text-align: center; margin-bottom: 8px;">${
-        modelData.model_desc
-      }</div>
-      <table class="tooltip-table">
-        <tr>
-          <td>Expire Date:</td>
-          <td>${modelData.expire_date}</td>
-        </tr>
-        <tr>
-          <td>Rental Rate:</td>
-          <td>${formatCurrencyDisplay(modelData.rental_rate)}</td>
-        </tr>
-        <tr>
-          <td>Delay:</td>
-          <td>${modelData.rw_delay}</td>
-        </tr>
-        <tr>
-          <td>Overtime:</td>
-          <td>${modelData.overtime}</td>
-        </tr>
-      </table>
-      <div style="border-top: 1.5px solid var(--primary-yellow); margin-top: 8px; padding-top: 8px;">
-        <div class="tooltip-description" style="font-size: 0.65rem; color: #555; margin-bottom: 2px;">Class: ${className}</div>
-        <div class="tooltip-description" style="font-style: italic; font-size: 0.65rem; color: #555; margin-bottom: 12px;">${classDesc}</div>
-        <div class="tooltip-description" style="font-size: 0.65rem; color: #555; margin-bottom: 2px;">Make: ${makeName}</div>
-        <div class="tooltip-description" style="font-style: italic; font-size: 0.65rem; color: #555;">${makeDesc}</div>
-      </div>
-    `
+<div class="tooltip-title" style="text-align: center;">${makeName} ${
+                      modelData.model_desc
+                    }</div>
+                    <div class="tooltip-description" style="text-align: center; margin-bottom: 8px;">${modelName}</div>
+${photoHTML}
+<table class="tooltip-table">
+  <tr>
+    <td>Expire Date:</td>
+    <td>${modelData.expire_date}</td>
+  </tr>
+  <tr>
+    <td>Rental Rate:</td>
+    <td>${formatCurrencyDisplay(modelData.rental_rate)}</td>
+  </tr>
+  <tr>
+    <td>Delay:</td>
+    <td>${modelData.rw_delay}</td>
+  </tr>
+  <tr>
+    <td>Overtime:</td>
+    <td>${modelData.overtime}</td>
+  </tr>
+</table>
+<div style="border-top: 1.5px solid var(--primary-yellow); margin-top: 8px; padding-top: 8px;">
+  <div class="tooltip-description" style="font-size: 0.65rem; color: #555; margin-bottom: 2px;">Class: ${className}</div>
+  <div class="tooltip-description" style="font-style: italic; font-size: 0.65rem; color: #555; margin-bottom: 12px;">${classDesc}</div>
+  <div class="tooltip-description" style="font-size: 0.65rem; color: #555; margin-bottom: 2px;">Make: ${makeName}</div>
+  <div class="tooltip-description" style="font-style: italic; font-size: 0.65rem; color: #555;">${makeDesc}</div>
+</div>
+`
                   )
                   .style("opacity", 1);
 
@@ -2152,6 +2302,7 @@
                   model: modelName,
                   make: makeName,
                   class: className,
+                  model_desc: modelData.model_desc || "",
                   rental_rate: modelData.rental_rate || "N/A",
                   rate_type: "N", // Default to Normal
                   expire_date: modelData.expire_date || "N/A",
@@ -2175,6 +2326,7 @@
         } catch (error) {
           console.error("Error loading chart data:", error);
           document.getElementById("sunburst").innerHTML = `
+
             <div class="alert alert-danger" role="alert">
               Error loading equipment data. Please try again later.
             </div>
