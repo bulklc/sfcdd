@@ -59,9 +59,95 @@
         width: 40%;
         height: 100%;
         overflow: hidden;
-        padding: 1rem; /* Reduced from 1rem */
+        padding: 0; /* Remove padding */
         box-sizing: border-box;
         border-right: 2px solid #dee2e6;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .search-container {
+        margin-bottom: 1rem;
+        width: 100%;
+        position: relative;
+        padding: 2rem 2rem 0 2rem; /* Add padding to match right section */
+      }
+
+      .search-input-wrapper {
+        position: relative;
+        width: 100%;
+      }
+
+      .search-box {
+        width: 100%;
+        padding: 0.75rem;
+        border: 2px solid var(--primary-blue);
+        border-radius: 0.375rem;
+        font-size: 1rem;
+        transition: all 0.2s;
+      }
+
+      .search-box:focus {
+        outline: none;
+        border-color: var(--primary-yellow);
+        box-shadow: 0 0 0 0.25rem rgba(253, 184, 19, 0.25);
+      }
+
+      .search-results {
+        position: absolute;
+        top: 100%; /* Position directly below the search box */
+        left: 0;
+        right: 0;
+        width: 100%;
+        background: white;
+        border: 2px solid var(--primary-blue);
+        border-radius: 0.375rem;
+        max-height: 400px;
+        overflow-y: auto;
+        z-index: 100;
+        display: none;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        margin-top: 0.5rem; /* Add spacing between search box and dropdown */
+      }
+
+      .search-result-item {
+        padding: 0.75rem;
+        cursor: pointer;
+        border-bottom: 1px solid #e0e0e0;
+        transition: background-color 0.2s;
+      }
+
+      .search-result-item:last-child {
+        border-bottom: none;
+      }
+
+      .search-result-item:hover {
+        background-color: var(--faded-yellow);
+      }
+
+      .search-result-class {
+        font-weight: 600;
+        color: var(--primary-blue);
+        font-size: 0.75rem;
+      }
+
+      .search-result-make {
+        font-weight: 500;
+        color: #666;
+        font-size: 0.75rem;
+      }
+
+      .search-result-model {
+        font-weight: 600;
+        color: #333;
+        font-size: 0.85rem;
+      }
+
+      .no-results {
+        padding: 1rem;
+        text-align: center;
+        color: #666;
+        font-style: italic;
       }
 
       .right-section {
@@ -81,6 +167,9 @@
         display: flex;
         justify-content: center;
         align-items: center;
+        padding: 0 2rem 2rem 2rem; /* Add padding to match right section */
+        box-sizing: border-box;
+        overflow: hidden; /* Prevent overflow */
       }
 
       .sunburst-arc {
@@ -501,6 +590,17 @@
 
     <main class="container-fluid">
       <div class="left-section">
+        <div class="search-container">
+          <div class="search-input-wrapper">
+            <input
+              type="text"
+              id="modelSearch"
+              class="search-box"
+              placeholder="Search for equipment models..."
+            />
+            <div id="searchResults" class="search-results"></div>
+          </div>
+        </div>
         <div id="sunburst"></div>
       </div>
       <div class="right-section">
@@ -588,78 +688,80 @@
       const clearListBtn = document.getElementById("clearListBtn");
       const exportListBtn = document.getElementById("exportListBtn");
       const grandTotalDisplay = document.getElementById("grandTotalDisplay");
+      const modelSearch = document.getElementById("modelSearch");
+      const searchResults = document.getElementById("searchResults");
 
-      function formatCurrency(value) {
-        if (value === null || value === undefined) return "N/A";
-        const numeric =
-          typeof value === "string"
-            ? parseFloat(value.replace(/[$,]/g, ""))
-            : value;
-        if (isNaN(numeric)) return "N/A";
-        return numeric.toLocaleString("en-US", {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        });
-      }
+      // Store all model data for searching
+      let allModels = [];
+      let makeDescMap = new Map(); // Store make descriptions for search
 
+      // Helper function to format currency for display
       function formatCurrencyDisplay(value) {
-        const formatted = formatCurrency(value);
-        return formatted === "N/A" ? "N/A" : `$${formatted}`;
+        if (value === "N/A" || value === null || value === undefined) {
+          return "N/A";
+        }
+        const numValue = parseFloat(value);
+        if (isNaN(numValue)) {
+          return "N/A";
+        }
+        return `$${numValue.toFixed(2)}`;
       }
 
-      function updateGrandTotal() {
-        if (!grandTotalDisplay) return;
-
-        const totalCells = document.querySelectorAll(".total-cell");
-        let sum = 0;
-        let hasValue = false;
-
-        totalCells.forEach((cell) => {
-          const value = parseFloat(cell.textContent.replace(/[$,]/g, ""));
-          if (!isNaN(value)) {
-            hasValue = true;
-            sum += value;
-          }
-        });
-
-        const formatted = sum.toLocaleString("en-US", {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        });
-
-        grandTotalDisplay.textContent = `Grand Total: $${
-          hasValue ? formatted : "0.00"
-        }`;
+      // Helper function to format currency for calculations
+      function formatCurrency(value) {
+        if (value === "N/A" || value === null || value === undefined) {
+          return 0;
+        }
+        const numValue = parseFloat(value);
+        return isNaN(numValue) ? 0 : numValue;
       }
 
+      // Add equipment to list function
       function addEquipmentToList(equipment) {
-        // Check if already in list
-        const exists = equipmentList.some(
+        // Check if equipment already exists in list
+        const existingIndex = equipmentList.findIndex(
           (item) =>
-            item.model === equipment.model &&
+            item.class === equipment.class &&
             item.make === equipment.make &&
-            item.class === equipment.class
+            item.model === equipment.model
         );
 
-        if (exists) {
-          return; // Don't add duplicates
+        if (existingIndex !== -1) {
+          // If exists, increment quantity
+          equipmentList[existingIndex].qty += 1;
+        } else {
+          // Add new equipment with default values
+          equipmentList.push({
+            ...equipment,
+            qty: 1,
+            hours: 1,
+            rate_type: equipment.rate_type || "N",
+          });
         }
 
-        equipmentList.push(equipment);
-        updateEquipmentTable();
+        renderEquipmentTable();
       }
 
-      function removeEquipmentFromList(index) {
-        equipmentList.splice(index, 1);
-        updateEquipmentTable();
+      // Get rate factor based on rate type and equipment data
+      function getRateFactor(rateType, rwDelay, overtime) {
+        switch (rateType) {
+          case "D":
+            // Delay - use the equipment's Rw_Delay value
+            const delayValue = parseFloat(rwDelay);
+            return isNaN(delayValue) ? 1.0 : delayValue;
+          case "N":
+            return 1.0; // Normal
+          case "O":
+            // Overtime - use the equipment's Overtime value
+            const overtimeValue = parseFloat(overtime);
+            return isNaN(overtimeValue) ? 1.0 : overtimeValue + 1;
+          default:
+            return 1.0;
+        }
       }
 
-      function clearEquipmentList() {
-        equipmentList.length = 0;
-        updateEquipmentTable();
-      }
-
-      function updateEquipmentTable() {
+      // Render equipment table function
+      function renderEquipmentTable() {
         if (equipmentList.length === 0) {
           equipmentTableBody.innerHTML = `
             <tr>
@@ -668,7 +770,10 @@
                   <div class="empty-state-icon">📋</div>
                   <div class="empty-state-text">
                     <p><strong>No equipment selected yet</strong></p>
-                    <p>Double-click on equipment models in the chart to add them to your list</p>
+                    <p>
+                      Double-click on equipment models in the chart to add
+                      them to your list
+                    </p>
                   </div>
                 </div>
               </td>
@@ -676,289 +781,170 @@
           `;
           clearListBtn.style.display = "none";
           exportListBtn.style.display = "none";
-          if (grandTotalDisplay) {
-            grandTotalDisplay.style.display = "none";
-            grandTotalDisplay.textContent = "Grand Total: $0.00";
-          }
-        } else {
-          let rows = "";
-          equipmentList.forEach((item, index) => {
-            const rateType = item.rate_type || "N";
-            const initialFactor = calculateFactor(item, rateType);
-            const effectiveRate = calculateEffectiveRate(item, initialFactor);
-            const rowTotal = calculateTotal(1, effectiveRate, 8);
-
-            // Abbreviate model description - remove Make prefix
-            const modelDesc = item.model_desc || "";
-            const abbreviatedDesc = modelDesc
-              .replace(/\s+/g, " ") // Replace multiple spaces with single space
-              .trim()
-              .substring(0, 20); // Increased character limit slightly
-
-            rows += `
-  <tr>
-    <td>
-      <div class="qty-controls">
-        <input type="number" class="qty-input" value="1" min="1" data-index="${index}" />
-        <button class="btn-delete" onclick="removeEquipmentFromList(${index})">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16">
-            <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
-          </svg>
-        </button>
-      </div>
-    </td>
-    <td>${item.class}</td>
-    <td>${item.make}</td>
-    <td class="model-cell">${item.model}</td>
-    <td>${abbreviatedDesc}</td>
-    <td>${formatCurrencyDisplay(item.rental_rate)}</td>
-    <td>
-      <div class="rate-type-toggle" data-index="${index}">
-        <button class="rate-type-btn${
-          rateType === "D" ? " active" : ""
-        }" data-type="D">D</button>
-        <button class="rate-type-btn${
-          rateType === "N" ? " active" : ""
-        }" data-type="N">N</button>
-        <button class="rate-type-btn${
-          rateType === "O" ? " active" : ""
-        }" data-type="O">O</button>
-      </div>
-    </td>
-    <td class="factor-cell" id="factor-${index}">${initialFactor}</td>
-    <td class="effective-rate-cell" id="effective-rate-${index}">${formatCurrencyDisplay(
-              effectiveRate
-            )}</td>
-    <td><input type="number" class="hours-input" value="8" min="0" step="0.5" data-index="${index}" /></td>
-    <td class="total-cell" id="total-${index}">${formatCurrencyDisplay(
-              rowTotal
-            )}</td>
-  </tr>
-`;
-          });
-          equipmentTableBody.innerHTML = rows;
-          if (grandTotalDisplay) {
-            grandTotalDisplay.style.display = "block";
-          }
-
-          // Add event listeners to toggle buttons
-          document.querySelectorAll(".rate-type-btn").forEach((btn) => {
-            btn.addEventListener("click", function (e) {
-              e.preventDefault();
-              const toggle = this.parentElement;
-              const buttons = toggle.querySelectorAll(".rate-type-btn");
-
-              // Remove active class from all buttons in this toggle
-              buttons.forEach((b) => b.classList.remove("active"));
-
-              // Add active class to clicked button
-              this.classList.add("active");
-
-              // Store the selected rate type and update factor
-              const index = toggle.dataset.index;
-              const rateType = this.dataset.type;
-              if (equipmentList[index]) {
-                equipmentList[index].rate_type = rateType;
-
-                // Update the factor cell
-                const factorCell = document.getElementById(`factor-${index}`);
-                const newFactor = calculateFactor(
-                  equipmentList[index],
-                  rateType
-                );
-                factorCell.textContent = newFactor;
-
-                // Update the effective rate cell
-                const effectiveRateCell = document.getElementById(
-                  `effective-rate-${index}`
-                );
-                const newEffectiveRate = calculateEffectiveRate(
-                  equipmentList[index],
-                  newFactor
-                );
-                effectiveRateCell.textContent =
-                  formatCurrencyDisplay(newEffectiveRate);
-
-                const qtyInput = document.querySelector(
-                  `.qty-input[data-index="${index}"]`
-                );
-                const qty = parseFloat(qtyInput.value) || 0;
-                const hoursInput = document.querySelector(
-                  `.hours-input[data-index="${index}"]`
-                );
-                const hours = parseFloat(hoursInput.value) || 0;
-                const totalCell = document.getElementById(`total-${index}`);
-                const updatedTotal = calculateTotal(
-                  qty,
-                  newEffectiveRate,
-                  hours
-                );
-                totalCell.textContent = formatCurrencyDisplay(updatedTotal);
-                updateGrandTotal();
-              }
-            });
-          });
-
-          // Add event listeners for quantity inputs
-          document.querySelectorAll(".qty-input").forEach((input) => {
-            input.addEventListener("input", function () {
-              const index = this.dataset.index;
-              const qty = parseFloat(this.value) || 0;
-              const effectiveRateCell = document.getElementById(
-                `effective-rate-${index}`
-              );
-              const effectiveRate = effectiveRateCell.textContent.replace(
-                /[$,]/g,
-                ""
-              );
-              const hoursInput = document.querySelector(
-                `.hours-input[data-index="${index}"]`
-              );
-              const hours = parseFloat(hoursInput.value) || 0;
-
-              const totalCell = document.getElementById(`total-${index}`);
-              totalCell.textContent = formatCurrencyDisplay(
-                calculateTotal(qty, effectiveRate, hours)
-              );
-              updateGrandTotal();
-            });
-          });
-
-          // Add event listeners for hours inputs
-          document.querySelectorAll(".hours-input").forEach((input) => {
-            input.addEventListener("input", function () {
-              const index = this.dataset.index;
-              const hours = parseFloat(this.value) || 0;
-              const effectiveRateCell = document.getElementById(
-                `effective-rate-${index}`
-              );
-              const effectiveRate = effectiveRateCell.textContent.replace(
-                /[$,]/g,
-                ""
-              );
-              const qtyInput = document.querySelector(
-                `.qty-input[data-index="${index}"]`
-              );
-              const qty = parseFloat(qtyInput.value) || 0;
-
-              const totalCell = document.getElementById(`total-${index}`);
-              totalCell.textContent = formatCurrencyDisplay(
-                calculateTotal(qty, effectiveRate, hours)
-              );
-              updateGrandTotal();
-            });
-          });
-
-          clearListBtn.style.display = "inline-block";
-          exportListBtn.style.display = "inline-block";
-          updateGrandTotal();
+          grandTotalDisplay.style.display = "none";
+          return;
         }
+
+        // Show action buttons
+        clearListBtn.style.display = "inline-block";
+        exportListBtn.style.display = "inline-block";
+        grandTotalDisplay.style.display = "block";
+
+        let grandTotal = 0;
+        let html = "";
+
+        equipmentList.forEach((item, index) => {
+          const baseRate = formatCurrency(item.rental_rate);
+          const factor = getRateFactor(
+            item.rate_type,
+            item.rw_delay,
+            item.overtime
+          );
+          const effectiveRate = baseRate * factor;
+          const hours = parseFloat(item.hours) || 0;
+          const total = effectiveRate * hours * item.qty;
+          grandTotal += total;
+
+          html += `
+            <tr>
+              <td>
+                <div class="qty-controls">
+                  <input type="number" min="1" value="${item.qty}" 
+                         class="qty-input" data-index="${index}" />
+                </div>
+              </td>
+              <td>${item.class}</td>
+              <td>${item.make}</td>
+              <td>${item.model}</td>
+              <td class="model-cell">${item.model_desc || ""}</td>
+              <td>${formatCurrencyDisplay(item.rental_rate)}</td>
+              <td>
+                <div class="rate-type-toggle">
+                  <button class="rate-type-btn ${
+                    item.rate_type === "D" ? "active" : ""
+                  }" data-index="${index}" data-type="D">D</button>
+                  <button class="rate-type-btn ${
+                    item.rate_type === "N" ? "active" : ""
+                  }" data-index="${index}" data-type="N">N</button>
+                  <button class="rate-type-btn ${
+                    item.rate_type === "O" ? "active" : ""
+                  }" data-index="${index}" data-type="O">O</button>
+                </div>
+              </td>
+              <td>${factor.toFixed(2)}</td>
+              <td>${formatCurrencyDisplay(effectiveRate)}</td>
+              <td>
+                <input type="number" min="0" step="0.1" value="${hours}" 
+                       class="hours-input" data-index="${index}" />
+              </td>
+              <td>${formatCurrencyDisplay(total)}</td>
+            </tr>
+          `;
+        });
+
+        equipmentTableBody.innerHTML = html;
+        grandTotalDisplay.textContent = `Grand Total: ${formatCurrencyDisplay(
+          grandTotal
+        )}`;
+
+        // Add event listeners
+        attachTableEventListeners();
       }
 
-      function calculateFactor(item, rateType) {
-        if (rateType === "D") {
-          // Delay: use Rw_Delay value
-          return item.rw_delay !== "N/A" ? item.rw_delay : "N/A";
-        } else if (rateType === "N") {
-          // Normal: factor is 1
-          return "1";
-        } else if (rateType === "O") {
-          // Overtime: 1 + overtime value
-          if (item.overtime !== "N/A") {
-            const overtimeValue = parseFloat(item.overtime);
-            if (!isNaN(overtimeValue)) {
-              return (1 + overtimeValue).toFixed(2);
+      // Attach event listeners to table controls
+      function attachTableEventListeners() {
+        // Quantity inputs
+        document.querySelectorAll(".qty-input").forEach((input) => {
+          input.addEventListener("change", function () {
+            const index = parseInt(this.dataset.index);
+            const newQty = parseInt(this.value) || 1;
+            if (newQty < 1) {
+              this.value = 1;
+              equipmentList[index].qty = 1;
+            } else {
+              equipmentList[index].qty = newQty;
             }
-          }
-          return "N/A";
-        }
-        return "1"; // Default
+            renderEquipmentTable();
+          });
+        });
+
+        // Hours inputs
+        document.querySelectorAll(".hours-input").forEach((input) => {
+          input.addEventListener("change", function () {
+            const index = parseInt(this.dataset.index);
+            const newHours = parseFloat(this.value) || 0;
+            equipmentList[index].hours = Math.max(0, newHours);
+            renderEquipmentTable();
+          });
+        });
+
+        // Rate type buttons
+        document.querySelectorAll(".rate-type-btn").forEach((btn) => {
+          btn.addEventListener("click", function () {
+            const index = parseInt(this.dataset.index);
+            const rateType = this.dataset.type;
+            equipmentList[index].rate_type = rateType;
+            renderEquipmentTable();
+          });
+        });
       }
 
-      function calculateEffectiveRate(item, factor) {
-        // Base Rate × Rate Factor
-        if (item.rental_rate === "N/A" || factor === "N/A") {
-          return "N/A";
+      // Clear list handler
+      clearListBtn.addEventListener("click", () => {
+        if (
+          confirm("Are you sure you want to clear the entire equipment list?")
+        ) {
+          equipmentList.length = 0;
+          renderEquipmentTable();
+        }
+      });
+
+      // Export list handler
+      exportListBtn.addEventListener("click", () => {
+        if (equipmentList.length === 0) {
+          alert("No equipment to export!");
+          return;
         }
 
-        const baseRate = parseFloat(item.rental_rate);
-        const factorValue = parseFloat(factor);
-
-        if (isNaN(baseRate) || isNaN(factorValue)) {
-          return "N/A";
-        }
-
-        return (baseRate * factorValue).toFixed(2);
-      }
-
-      function calculateTotal(qty, effectiveRate, hours) {
-        if (effectiveRate === "N/A") {
-          return "N/A";
-        }
-
-        const rate = parseFloat(effectiveRate);
-        const quantity = parseFloat(qty) || 0;
-        const hoursValue = parseFloat(hours) || 0;
-
-        if (isNaN(rate)) {
-          return "N/A";
-        }
-
-        return (quantity * rate * hoursValue).toFixed(2);
-      }
-
-      function exportEquipmentList() {
         // Create CSV content
-        const headers = [
-          "QTY",
-          "Class",
-          "Make",
-          "Code",
-          "Model",
-          "Rental Base Rate",
-          "Rate Type",
-          "Rate Coefficient",
-          "Effective Rate",
-          "Hours",
-          "Total",
-        ];
-        const csvContent =
-          headers.join(",") +
-          "\n" +
-          equipmentList
-            .map((item) => {
-              const factor = calculateFactor(item, item.rate_type || "N");
-              const effectiveRate = calculateEffectiveRate(item, factor);
-              return [
-                "1",
-                `"${item.class}"`,
-                `"${item.make}"`,
-                `"${item.model}"`,
-                item.rental_rate,
-                item.rate_type || "N",
-                factor,
-                effectiveRate,
-                "",
-                "",
-              ].join(",");
-            })
-            .join("\n");
+        let csv =
+          "QTY,Class,Make,Code,Model,Base Rate,Rate Type,Factor,Effective Rate,Hours,Total\n";
 
-        // Create download link
-        const blob = new Blob([csvContent], { type: "text/csv" });
+        let grandTotal = 0;
+        equipmentList.forEach((item) => {
+          const baseRate = formatCurrency(item.rental_rate);
+          const factor = getRateFactor(
+            item.rate_type,
+            item.rw_delay,
+            item.overtime
+          );
+          const effectiveRate = baseRate * factor;
+          const hours = parseFloat(item.hours) || 0;
+          const total = effectiveRate * hours * item.qty;
+          grandTotal += total;
+
+          csv += `${item.qty},${item.class},${item.make},${item.model},"${
+            item.model_desc
+          }",${baseRate},${item.rate_type},${factor},${effectiveRate.toFixed(
+            2
+          )},${hours},${total.toFixed(2)}\n`;
+        });
+
+        csv += `\nGrand Total:,,,,,,,,,,${grandTotal.toFixed(2)}`;
+
+        // Download CSV
+        const blob = new Blob([csv], { type: "text/csv" });
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = "equipment_list.csv";
+        a.download = `equipment_estimate_${
+          new Date().toISOString().split("T")[0]
+        }.csv`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
         window.URL.revokeObjectURL(url);
-      }
-
-      // Event listeners
-      clearListBtn.addEventListener("click", clearEquipmentList);
-      exportListBtn.addEventListener("click", exportEquipmentList);
+      });
 
       // Load data and create sunburst chart
       async function loadSunburstChart() {
@@ -970,6 +956,32 @@
 
           const data = await costResponse.json();
           const photosData = await photosResponse.json();
+
+          // Build make descriptions map first
+          data.forEach((item) => {
+            if (item.Class && item.Make && item.Make_Desc) {
+              const makeKey = `${item.Class}|${item.Make}`;
+              if (!makeDescMap.has(makeKey)) {
+                makeDescMap.set(makeKey, item.Make_Desc);
+              }
+            }
+          });
+
+          // Store all models for search functionality with make descriptions
+          allModels = data.map((item) => {
+            const makeKey = `${item.Class}|${item.Make}`;
+            return {
+              class: item.Class,
+              make: item.Make,
+              make_desc: makeDescMap.get(makeKey) || "",
+              model: item.Model,
+              model_desc: item.Model_Desc || "",
+              rental_rate: item.Rental_Rate || "N/A",
+              expire_date: item.Expire_Date || "N/A",
+              rw_delay: item.Rw_Delay || "N/A",
+              overtime: item.Overtime || "N/A",
+            };
+          });
 
           // Create a map for equipment photos lookup
           const photoMap = new Map();
@@ -1042,7 +1054,6 @@
 
           // After loading the data, create maps for class, make, and model descriptions
           const classDescMap = new Map();
-          const makeDescMap = new Map();
           const modelDataMap = new Map();
 
           data.forEach((item) => {
@@ -1052,14 +1063,6 @@
               !classDescMap.has(item.Class)
             ) {
               classDescMap.set(item.Class, item.Class_Desc);
-            }
-
-            // Create a unique key combining Class and Make
-            if (item.Class && item.Make && item.Make_Desc) {
-              const makeKey = `${item.Class}|${item.Make}`;
-              if (!makeDescMap.has(makeKey)) {
-                makeDescMap.set(makeKey, item.Make_Desc);
-              }
             }
 
             // Store complete model data with unique key
@@ -1079,12 +1082,25 @@
 
           // Set up dimensions
           const container = document.getElementById("sunburst");
-          const width =
-            container.clientWidth; /* Use full width instead of Math.min */
-          const height = container.clientHeight; /* Use full height */
-          const radius =
-            Math.min(width, height) /
-            2; /* Use the smaller dimension for radius */
+          const containerWidth = container.clientWidth;
+          const containerHeight = container.clientHeight;
+
+          // Account for padding in the available space
+          const paddingLeft =
+            parseFloat(getComputedStyle(container).paddingLeft) || 0;
+          const paddingRight =
+            parseFloat(getComputedStyle(container).paddingRight) || 0;
+          const paddingTop =
+            parseFloat(getComputedStyle(container).paddingTop) || 0;
+          const paddingBottom =
+            parseFloat(getComputedStyle(container).paddingBottom) || 0;
+
+          const availableWidth = containerWidth - paddingLeft - paddingRight;
+          const availableHeight = containerHeight - paddingTop - paddingBottom;
+
+          const width = availableWidth;
+          const height = availableHeight;
+          const radius = Math.min(width, height) / 2;
 
           // Create SVG
           const svg = d3
@@ -1092,6 +1108,8 @@
             .append("svg")
             .attr("width", width)
             .attr("height", height)
+            .style("display", "block")
+            .style("margin", "auto")
             .append("g")
             .attr(
               "transform",
@@ -1638,7 +1656,7 @@
             })
             .attr("text-anchor", "middle")
             .attr("alignment-baseline", "middle")
-            .attr("font-size", "0.9rem") /* Reduced to match other rings */
+            .attr("font-size", "0.8rem") /* Reduced to match other rings */
             .attr("font-weight", "bold")
             .attr("fill", "#1a1a1a")
             .attr("pointer-events", "none")
@@ -1659,7 +1677,7 @@
             })
             .attr("text-anchor", "middle")
             .attr("alignment-baseline", "middle")
-            .attr("font-size", "0.9rem") /* Reduced to match other rings */
+            .attr("font-size", "0.8rem") /* Reduced to match other rings */
             .attr("font-weight", "bold")
             .attr("fill", "#1a1a1a")
             .attr("pointer-events", "none")
@@ -1721,7 +1739,7 @@
               .attr("class", "model-label")
               .attr("text-anchor", "middle")
               .attr("alignment-baseline", "middle")
-              .attr("font-size", "0.9rem") /* Increased to match other rings */
+              .attr("font-size", "0.8rem") /* Increased to match other rings */
               .attr("font-weight", "600")
               .attr("fill", "#1a1a1a")
               .attr("pointer-events", "none")
@@ -1801,11 +1819,11 @@
                 const classPhotoFilename = classPhotoMap.get(className);
                 const classPhotoHTML = classPhotoFilename
                   ? `<div style="text-align: center; margin-top: 8px;">
-                       <img src="../equipment_photos/${classPhotoFilename}" 
-                            alt="${className}" 
-                            style="max-width: 100%; max-height: 250px; border-radius: 4px; border: 1px solid #dee2e6;" 
-                            onerror="this.style.display='none'">
-                     </div>`
+                             <img src="../equipment_photos/${classPhotoFilename}"
+                                  alt="${className}"
+                                  style="max-width: 100%; max-height: 250px; border-radius: 4px; border: 1px solid #dee2e6;"
+                                  onerror="this.style.display='none'">
+                           </div>`
                   : "";
 
                 tooltip
@@ -1815,20 +1833,20 @@
                   )
                   .html(
                     `
-          <div class="tooltip-title">${className}</div>
-          <div class="tooltip-description">${classDesc}</div>
-          ${classPhotoHTML}
-          <div class="tooltip-stats">
-            <div class="tooltip-stat">
-              <span class="tooltip-stat-label">Makes:</span>
-              <span class="tooltip-stat-value">${makeCount}</span>
-            </div>
-            <div class="tooltip-stat">
-              <span class="tooltip-stat-label">Models:</span>
-              <span class="tooltip-stat-value">${modelCount}</span>
-            </div>
-          </div>
-        `
+                <div class="tooltip-title">${className}</div>
+                <div class="tooltip-description">${classDesc}</div>
+                ${classPhotoHTML}
+                <div class="tooltip-stats">
+                  <div class="tooltip-stat">
+                    <span class="tooltip-stat-label">Makes:</span>
+                    <span class="tooltip-stat-value">${makeCount}</span>
+                  </div>
+                  <div class="tooltip-stat">
+                    <span class="tooltip-stat-label">Models:</span>
+                    <span class="tooltip-stat-value">${modelCount}</span>
+                  </div>
+                </div>
+              `
                   )
                   .style("opacity", 1);
 
@@ -1867,11 +1885,11 @@
                 const makePhotoFilename = makePhotoMap.get(makeKey);
                 const makePhotoHTML = makePhotoFilename
                   ? `<div style="text-align: center; margin-top: 8px;">
-                       <img src="../equipment_photos/${makePhotoFilename}" 
-                            alt="${makeName}" 
-                            style="max-width: 100%; max-height: 250px; border-radius: 4px; border: 1px solid #dee2e6;" 
-                            onerror="this.style.display='none'">
-                     </div>`
+                             <img src="../equipment_photos/${makePhotoFilename}"
+                                  alt="${makeName}"
+                                  style="max-width: 100%; max-height: 250px; border-radius: 4px; border: 1px solid #dee2e6;"
+                                  onerror="this.style.display='none'">
+                           </div>`
                   : "";
 
                 tooltip
@@ -1881,16 +1899,16 @@
                   )
                   .html(
                     `
-      <div class="tooltip-title">${makeName}</div>
-      <div class="tooltip-description">${makeDesc}</div>
-      ${makePhotoHTML}
-      <div class="tooltip-stats">
-        <div class="tooltip-stat">
-          <span class="tooltip-stat-label">${className} Models:</span>
-          <span class="tooltip-stat-value">${modelCount}</span>
-        </div>
-      </div>
-    `
+            <div class="tooltip-title">${makeName}</div>
+            <div class="tooltip-description">${makeDesc}</div>
+            ${makePhotoHTML}
+            <div class="tooltip-stats">
+              <div class="tooltip-stat">
+                <span class="tooltip-stat-label">${className} Models:</span>
+                <span class="tooltip-stat-value">${modelCount}</span>
+              </div>
+            </div>
+          `
                   )
                   .style("opacity", 1);
 
@@ -1923,11 +1941,11 @@
                 const photoFilename = photoMap.get(modelKey);
                 const photoHTML = photoFilename
                   ? `<div style="text-align: center; margin-top: 8px;">
-                       <img src="../equipment_photos/${photoFilename}" 
-                            alt="${modelName}" 
-                            style="max-width: 100%; max-height: 250px; border-radius: 4px; border: 1px solid #dee2e6;" 
-                            onerror="this.style.display='none'">  
-                     </div>`
+                             <img src="../equipment_photos/${photoFilename}"
+                                  alt="${modelName}"
+                                  style="max-width: 100%; max-height: 250px; border-radius: 4px; border: 1px solid #dee2e6;"
+                                  onerror="this.style.display='none'">
+                           </div>`
                   : "";
 
                 tooltip
@@ -1937,36 +1955,36 @@
                   )
                   .html(
                     `
-<div class="tooltip-title" style="text-align: center;">${makeName} ${
+      <div class="tooltip-title" style="text-align: center;">${makeName} ${
                       modelData.model_desc
                     }</div>
-                    <div class="tooltip-description" style="text-align: center; margin-bottom: 8px;">${modelName}</div>
-${photoHTML}
-<table class="tooltip-table">
-  <tr>
-    <td>Expire Date:</td>
-    <td>${modelData.expire_date}</td>
-  </tr>
-  <tr>
-    <td>Rental Rate:</td>
-    <td>${formatCurrencyDisplay(modelData.rental_rate)}</td>
-  </tr>
-  <tr>
-    <td>Delay:</td>
-    <td>${modelData.rw_delay}</td>
-  </tr>
-  <tr>
-    <td>Overtime:</td>
-    <td>${modelData.overtime}</td>
-  </tr>
-</table>
-<div style="border-top: 1.5px solid var(--primary-yellow); margin-top: 8px; padding-top: 8px;">
-  <div class="tooltip-description" style="font-size: 0.65rem; color: #555; margin-bottom: 2px;">Class: ${className}</div>
-  <div class="tooltip-description" style="font-style: italic; font-size: 0.65rem; color: #555; margin-bottom: 12px;">${classDesc}</div>
-  <div class="tooltip-description" style="font-size: 0.65rem; color: #555; margin-bottom: 2px;">Make: ${makeName}</div>
-  <div class="tooltip-description" style="font-style: italic; font-size: 0.65rem; color: #555;">${makeDesc}</div>
-</div>
-`
+                          <div class="tooltip-description" style="text-align: center; margin-bottom: 8px;">${modelName}</div>
+      ${photoHTML}
+      <table class="tooltip-table">
+        <tr>
+          <td>Expire Date:</td>
+          <td>${modelData.expire_date}</td>
+        </tr>
+        <tr>
+          <td>Rental Rate:</td>
+          <td>${formatCurrencyDisplay(modelData.rental_rate)}</td>
+        </tr>
+        <tr>
+          <td>Delay:</td>
+          <td>${modelData.rw_delay}</td>
+        </tr>
+        <tr>
+          <td>Overtime:</td>
+          <td>${modelData.overtime}</td>
+        </tr>
+      </table>
+      <div style="border-top: 1.5px solid var(--primary-yellow); margin-top: 8px; padding-top: 8px;">
+        <div class="tooltip-description" style="font-size: 0.65rem; color: #555; margin-bottom: 2px;">Class: ${className}</div>
+        <div class="tooltip-description" style="font-style: italic; font-size: 0.65rem; color: #555; margin-bottom: 12px;">${classDesc}</div>
+        <div class="tooltip-description" style="font-size: 0.65rem; color: #555; margin-bottom: 2px;">Make: ${makeName}</div>
+        <div class="tooltip-description" style="font-style: italic; font-size: 0.65rem; color: #555;">${makeDesc}</div>
+      </div>
+      `
                   )
                   .style("opacity", 1);
 
@@ -2167,7 +2185,9 @@ ${photoHTML}
                     while (colorNode.depth > 1) {
                       colorNode = colorNode.parent;
                     }
-                    return color(colorNode.data.name);
+                    return colorNode.data.name === "root"
+                      ? "transparent"
+                      : color(colorNode.data.name);
                   })
                   .style("opacity", (segment) => {
                     let classNode = segment;
@@ -2257,6 +2277,7 @@ ${photoHTML}
                     while (classNode.depth > 1) {
                       classNode = classNode.parent;
                     }
+
                     if (classNode === selectedSegment && segment.depth <= 3) {
                       return "auto";
                     }
@@ -2327,15 +2348,233 @@ ${photoHTML}
           console.error("Error loading chart data:", error);
           document.getElementById("sunburst").innerHTML = `
 
-            <div class="alert alert-danger" role="alert">
-              Error loading equipment data. Please try again later.
-            </div>
-          `;
+                  <div class="alert alert-danger" role="alert">
+                    Error loading equipment data. Please try again later.
+                  </div>
+                `;
         }
       }
 
       // Load chart when DOM is ready
       document.addEventListener("DOMContentLoaded", loadSunburstChart);
+
+      // Search functionality
+      modelSearch.addEventListener("input", function () {
+        const searchTerm = this.value.toLowerCase().trim();
+
+        if (searchTerm.length < 2) {
+          searchResults.style.display = "none";
+          return;
+        }
+
+        // Split search term into individual words for multi-word matching
+        const searchWords = searchTerm
+          .split(/\s+/)
+          .filter((word) => word.length > 0);
+
+        const matches = allModels.filter((model) => {
+          // Create searchable text combining all fields INCLUDING make description
+          const searchableText =
+            `${model.class} ${model.make} ${model.make_desc} ${model.model} ${model.model_desc}`.toLowerCase();
+
+          // Check if all search words are present in the searchable text
+          const matchesAllWords = searchWords.every((word) =>
+            searchableText.includes(word)
+          );
+
+          // Also check individual field matches for more precise results
+          const classMatch = model.class.toLowerCase().includes(searchTerm);
+          const makeMatch = model.make.toLowerCase().includes(searchTerm);
+          const makeDescMatch = model.make_desc
+            .toLowerCase()
+            .includes(searchTerm);
+          const modelMatch = model.model.toLowerCase().includes(searchTerm);
+          const descMatch = model.model_desc.toLowerCase().includes(searchTerm);
+
+          // Return true if matches all words OR matches any individual field
+          return (
+            matchesAllWords ||
+            classMatch ||
+            makeMatch ||
+            makeDescMatch ||
+            modelMatch ||
+            descMatch
+          );
+        });
+
+        if (matches.length === 0) {
+          searchResults.innerHTML =
+            '<div class="no-results">No equipment found</div>';
+          searchResults.style.display = "block";
+          return;
+        }
+
+        // Sort matches by relevance - use ORIGINAL text, not highlighted
+        const sortedMatches = matches.sort((a, b) => {
+          // Exact matches get highest priority
+          const aExactModel = a.model.toLowerCase() === searchTerm;
+          const bExactModel = b.model.toLowerCase() === searchTerm;
+          if (aExactModel && !bExactModel) return -1;
+          if (!aExactModel && bExactModel) return 1;
+
+          // Model code starts with search term
+          const aStartsModel = a.model.toLowerCase().startsWith(searchTerm);
+          const bStartsModel = b.model.toLowerCase().startsWith(searchTerm);
+          if (aStartsModel && !bStartsModel) return -1;
+          if (!aStartsModel && bStartsModel) return 1;
+
+          // Class matches - use original text
+          const aClassMatch = a.class.toLowerCase().includes(searchTerm);
+          const bClassMatch = b.class.toLowerCase().includes(searchTerm);
+          if (aClassMatch && !bClassMatch) return -1;
+          if (!aClassMatch && bClassMatch) return 1;
+
+          // Make matches (code or description) - use original text
+          const aMakeMatch =
+            a.make.toLowerCase().includes(searchTerm) ||
+            a.make_desc.toLowerCase().includes(searchTerm);
+          const bMakeMatch =
+            b.make.toLowerCase().includes(searchTerm) ||
+            b.make_desc.toLowerCase().includes(searchTerm);
+          if (aMakeMatch && !bMakeMatch) return -1;
+          if (!aMakeMatch && bMakeMatch) return 1;
+
+          // Alphabetical by class, then make, then model
+          const classCompare = a.class.localeCompare(b.class);
+          if (classCompare !== 0) return classCompare;
+
+          const makeCompare = a.make.localeCompare(b.make);
+          if (makeCompare !== 0) return makeCompare;
+
+          return a.model.localeCompare(b.model);
+        });
+
+        // Limit results to 50 items
+        const limitedMatches = sortedMatches.slice(0, 50);
+
+        searchResults.innerHTML = limitedMatches
+          .map((model) => {
+            // Highlight matching text - only apply to display, not to data
+            const highlightText = (text) => {
+              if (!text) return "";
+
+              // Highlight each search word without adding extra spaces
+              let highlighted = String(text);
+              searchWords.forEach((word) => {
+                const regex = new RegExp(`(${word})`, "gi");
+                highlighted = highlighted.replace(
+                  regex,
+                  '<mark style="background-color: var(--faded-yellow); font-weight: 600;">$1</mark>'
+                );
+              });
+
+              return highlighted;
+            };
+
+            // Format rate with exactly 2 decimal places
+            const formatRate = (rate) => {
+              if (rate === "N/A" || rate === null || rate === undefined) {
+                return "N/A";
+              }
+              const numValue = parseFloat(rate);
+              if (isNaN(numValue)) {
+                return "N/A";
+              }
+              return `$${numValue.toFixed(2)}`;
+            };
+
+            // Build the make line without extra spaces
+            const makeDescPart = model.make_desc
+              ? ` - ${highlightText(model.make_desc)}`
+              : "";
+
+            return `
+                <div class="search-result-item" data-class="${
+                  model.class
+                }" data-make="${model.make}" data-model="${model.model}">
+                  <div class="search-result-class">${highlightText(
+                    model.class
+                  )}</div>
+                  <div class="search-result-make">${highlightText(
+                    model.make
+                  )}${makeDescPart}</div>
+                  <div class="search-result-model">${highlightText(
+                    model.model
+                  )} - ${highlightText(model.model_desc)}</div>
+                  <div style="font-size: 0.7rem; color: #888; margin-top: 0.25rem;">
+                    Rate: ${formatRate(model.rental_rate)}
+                  </div>
+                </div>
+              `;
+          })
+          .join("");
+
+        searchResults.style.display = "block";
+
+        // Add click handlers to search results
+        document.querySelectorAll(".search-result-item").forEach((item) => {
+          item.addEventListener("click", function () {
+            const equipment = {
+              class: this.dataset.class,
+              make: this.dataset.make,
+              model: this.dataset.model,
+              model_desc: allModels.find(
+                (m) =>
+                  m.class === this.dataset.class &&
+                  m.make === this.dataset.make &&
+                  m.model === this.dataset.model
+              )?.model_desc,
+              rental_rate: allModels.find(
+                (m) =>
+                  m.class === this.dataset.class &&
+                  m.make === this.dataset.make &&
+                  m.model === this.dataset.model
+              )?.rental_rate,
+              rate_type: "N",
+              expire_date: allModels.find(
+                (m) =>
+                  m.class === this.dataset.class &&
+                  m.make === this.dataset.make &&
+                  m.model === this.dataset.model
+              )?.expire_date,
+              rw_delay: allModels.find(
+                (m) =>
+                  m.class === this.dataset.class &&
+                  m.make === this.dataset.make &&
+                  m.model === this.dataset.model
+              )?.rw_delay,
+              overtime: allModels.find(
+                (m) =>
+                  m.class === this.dataset.class &&
+                  m.make === this.dataset.make &&
+                  m.model === this.dataset.model
+              )?.overtime,
+            };
+
+            addEquipmentToList(equipment);
+            modelSearch.value = "";
+            searchResults.style.display = "none";
+          });
+        });
+      });
+
+      // Close search results when clicking outside
+      document.addEventListener("click", function (e) {
+        if (
+          !modelSearch.contains(e.target) &&
+          !searchResults.contains(e.target)
+        ) {
+          searchResults.style.display = "none";
+        }
+      });
+
+      // Close search results on Escape key
+      modelSearch.addEventListener("keydown", function (e) {
+        if (e.key === "Escape") {
+          searchResults.style.display = "none";
+          this.blur();
+        }
+      });
     </script>
   </body>
 </html>
