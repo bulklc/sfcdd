@@ -1,6 +1,15 @@
 {
   "classes": [
     {
+      "class": "AIRCP",
+      "makes": [
+        {
+          "make": "PORT",
+          "models": ["016-025**"]
+        }
+      ]
+    },
+    {
       "class": "COMHG",
       "makes": [
         {
@@ -93,7 +102,7 @@
         },
         {
           "make": "LITE",
-          "models": ["4 LIGHT*"]
+          "models": ["2 LIGHT", "4 LIGHT*"]
         }
       ]
     },
@@ -213,6 +222,60 @@
         {
           "make": "KATO",
           "models": ["3050*"]
+        }
+      ]
+    },
+    {
+      "class": "LDRRT",
+      "makes": [
+        {
+          "make": "CAT",
+          "models": ["1861C**", "1868"]
+        }
+      ]
+    },
+    {
+      "class": "PUMWA",
+      "makes": [
+        {
+          "make": "APMP",
+          "models": ["050-125**"]
+        }
+      ]
+    },
+    {
+      "class": "ROVIB",
+      "makes": [
+        {
+          "make": "I-R",
+          "models": ["3572**"]
+        }
+      ]
+    },
+    {
+      "class": "TRUCK",
+      "makes": [
+        {
+          "make": "T&TT",
+          "models": ["00-06", "12-20**", "28-36"]
+        }
+      ]
+    },
+    {
+      "class": "TRAIT",
+      "makes": [
+        {
+          "make": "TB-2",
+          "models": ["08-10**", "22-25"]
+        }
+      ]
+    },
+    {
+      "class": "TRUON",
+      "makes": [
+        {
+          "make": "TRUN",
+          "models": ["2AXL**", "3AXL"]
         }
       ]
     }
